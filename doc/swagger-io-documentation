@@ -1,0 +1,1567 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0
+info:
+  description: API that allows you to create a budget and track expences.
+  version: "1.0.0"
+  title: Personal Budget API
+  contact:
+    email: jimmy@kodsmed.se
+  license:
+    name: MIT
+    url: 'https://opensource.org/license/mit'
+tags:
+  - name: documentation
+    description: Provides a link to this documentation
+  - name: authentication
+    description: Handle user authentication
+  - name: user
+    description: Handle user registration, update and removal
+  - name: budget
+    description: Handle a budget and it's tracked expences
+  - name: budget access
+    description: Handle what users have access to a budget
+  - name: category
+    description: Handle the categories for a budget
+  - name: expense
+    description: Handle the expenses for a category
+  - name: funds
+    description: Handle the available funds for a budget and category
+  - name: webhook
+    description: Register, remove or check status for available webhooks
+paths:
+  /:
+    get:
+      tags:
+        - documentation
+      summary: provides a link to this documentation.
+      description: |
+        Provides the end user with a link to this documentation.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/docs'
+        '500':
+          description: the server is unresponsive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/docs'
+
+  /user:
+    post:
+      tags:
+        - user
+      summary: register a new user
+      operationId: registerUser
+      description: |
+        By providing a valid user information, a new user will be added to the system.
+      parameters:
+        - in: query
+          name: username
+          description: provide a username you want to be known/displayed as (8-32 characters)
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: email
+          description: provide an email address where you may be contacted and want to use as login
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: password
+          description: provide a passord to use for authentication (12-156 characters)
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: user was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              Links:
+                example: '[
+                  {
+                    "rel": "login",
+                    "href": "https://example.com/login",
+                    "method": "POST"
+                  }
+                ]'
+        '400':
+          description: invalid user details
+        '409':
+          description: that email is already registed
+        '500':
+          description: something went wrong on the server
+
+  /user/password:
+    put:
+      tags:
+        - user
+      summary: update your users password
+      operationId: updateUserPassword
+      description: |
+        Updates the authenticated uses password to the one provided.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: password
+          description: provide a passord to use for authentication (12-156 characters)
+          required: true
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: user password updated successfully
+        '400':
+          description: invalid new passord
+        '401':
+          description: invalid authentication
+        '500':
+          description: something went wrong on the server
+
+  /user/email:
+    put:
+      tags:
+        - user
+      summary: update your users email
+      operationId: updateUserEmail
+      description: |
+        Updates the authenticated uses emailaddress to the one provided.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: email
+          description: provide an email used for contact and login.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user emailaddress updated successfully
+        '400':
+          description: invalid new emailaddress
+        '401':
+          description: invalid authentication
+        '500':
+            description: something went wrong on the server
+
+  /login:
+    post:
+      tags:
+        - authentication
+      summary: log in as a user
+      operationId: loginUser
+      description: |
+        By providing a valid email and password, a JWT will be returned.
+      parameters:
+        - in: query
+          name: email
+          description: provide the email address you used for registration
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: password
+          description: provide the password you used for registration
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: JWT returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwt:
+                    type: string
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+                  Links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: url
+                        example: 'https://example.com'
+        '401':
+          description: invalid email or password
+        '500':
+          description: something went wrong on the server
+
+  /logout:
+    post:
+      tags:
+        - authentication
+      summary: log out as a user
+      operationId: logoutUser
+      description: |
+        By providing a valid JWT, the user will be logged out.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user logged out successfully
+        '401':
+          description: invalid JWT
+        '500':
+          description: something went wrong on the server
+
+  /budget:
+    post:
+      tags:
+        - budget
+      summary: create a new budget
+      operationId: createBudget
+      description: |
+        By providing a valid budget information, a new budget will be added to the system.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: name
+          description: provide a name for your budget
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: description
+          description: provide a description for your budget
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: startDate
+          description: provide a start date for your budget
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: period
+          description: provide a period for your budget
+          required: true
+          schema:
+            type: string
+            enum:
+              - daily
+              - weekly
+              - monthly
+              - yearly
+        - in: query
+          name: categories
+          description: provide the categories and amounts for your budget
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                  example: food
+                amount:
+                  type: number
+                  format: float
+                  minimum: 0
+                  example: 1000
+      responses:
+        '201':
+          description: budget was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '400':
+          description: invalid budget details
+        '401':
+          description: invalid authentication
+        '500':
+          description: something went wrong on the server
+
+  /budgets/{budgetId}:
+    get:
+      tags:
+        - budget
+      summary: get a budget
+      operationId: getBudget
+      description: |
+        By providing a valid budgetId, the budget will be returned.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to get
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: budget returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '400':
+          description: invalid budgetId
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+            description: something went wrong on the server
+    put:
+      tags:
+        - budget
+      summary: update a budget
+      operationId: updateBudget
+      description: |
+        By providing a valid budgetId and budget information, the budget will be updated.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: name
+          description: provide a name for your budget
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: description
+          description: provide a description for your budget
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: startDate
+          description: provide a start date for your budget
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: period
+          description: provide a period for your budget
+          required: true
+          schema:
+            type: string
+            enum:
+              - daily
+              - weekly
+              - monthly
+              - yearly
+        - in: query
+          name: categories
+          description: provide the categories and amounts for your budget
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                  example: food
+                amount:
+                  type: number
+                  format: float
+                  minimum: 0
+                  example: 1000
+        - in: query
+          name: totaltBudget
+          description: provide the total amount for your budget
+          required: true
+          schema:
+            type: number
+            format: float
+            minimum: 0
+      responses:
+        '200':
+          description: budget updated successfully
+        '400':
+          description: invalid budgetId or budget details
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+    delete:
+      tags:
+        - budget
+      summary: remove a budget
+      operationId: removeBudget
+      description: |
+        By providing a valid budgetId, the budget will be removed.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to remove
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: budget removed successfully
+        '400':
+          description: invalid budgetId
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+  /budgets/{budgetId}/access:
+    get:
+      tags:
+        - budget access
+      summary: get a list with what users have access to a budget and at what level
+      operationId: getBudgetUsers
+      description: |
+        By providing a valid budgetId, the usersIds with access to the budget will be returned along with their access level.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to get users for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: users returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    userId:
+                      type: string
+                      format: uuid
+                      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+                    access:
+                      type: string
+                      enum:
+                        - owner
+                        - read
+                        - write
+                      example: owner
+        '400':
+          description: invalid budgetId
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+    post:
+      tags:
+        - budget access
+      summary: add a user to a budget
+      operationId: addUserToBudget
+      description: |
+        By providing a valid budgetId and userId, the user will be added to the budget with the access level provided.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to add a user to
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: userId
+          description: provide the id of the user you want to add to the budget
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: access
+          description: provide the access level you want the user to have
+          required: true
+          schema:
+            type: string
+            enum:
+              - owner
+              - read
+              - write
+      responses:
+        '201':
+          description: user added to budget successfully
+        '400':
+          description: invalid budgetId or userId or access
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+    delete:
+      tags:
+        - budget access
+      summary: remove a user from a budget
+      operationId: removeUserFromBudget
+      description: |
+        By providing a valid budgetId and userId, the user will be removed from the budget.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to remove a user from
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: userId
+          description: provide the id of the user you want to remove from the budget
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: user removed from budget successfully
+        '400':
+          description: invalid budgetId or userId
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+    put:
+      tags:
+        - budget access
+      summary: update a users access level to a budget
+      operationId: updateUserAccessToBudget
+      description: |
+        By providing a valid budgetId, userId and access level, the user will have their access level updated.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to update a users access level for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: userId
+          description: provide the id of the user you want to update the access level for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: access
+          description: provide the access level you want the user to have
+          required: true
+          schema:
+            type: string
+            enum:
+              - owner
+              - read
+              - write
+      responses:
+        '200':
+          description: user access level updated successfully
+        '400':
+          description: invalid budgetId or userId or access
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+  /budgets/{budgetId}/categories:
+    get:
+      summary: get a list of categories for a budget
+      tags:
+        - category
+      operationId: getBudgetCategories
+      description: |
+        By providing a valid budgetId, the categories for the budget will be returned.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to get categories for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: categories returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                example: [{category: food, amount: 1000}, {category: rent, amount: 500}, {category: transport, amount: 200}, {category: savings, amount: 300}, {category: other, amount: 100}]
+        '400':
+          description: invalid budgetId
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+    post:
+      summary: add a category to a budget
+      tags:
+        - category
+      operationId: addCategoryToBudget
+      description: |
+        By providing a valid budgetId, category and amount, the category will be added to the budget.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to add a category to
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: category
+          description: provide the category you want to add to the budget
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: amount
+          description: provide the amount you want to add to the category
+          required: true
+          schema:
+            type: number
+            format: float
+            minimum: 0
+      responses:
+        '201':
+          description: category added to budget successfully
+        '400':
+          description: invalid budgetId or category or amount
+        '401':
+          description: invalid authentication
+        '422':
+          description: the categories and amounts provided exceeds the total budget
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+    put:
+      summary: update the categories for a budget
+      tags:
+        - category
+      operationId: updateBudgetCategories
+      description: |
+        By providing a valid budgetId, categories and amounts, the categories for the budget will be updated.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to update categories for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: categories
+          description: provide the categories and amounts you want to update for the budget
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                  example: food
+                amount:
+                  type: number
+                  format: float
+                  minimum: 0
+                  example: 1000
+      responses:
+        '200':
+          description: categories updated successfully
+        '400':
+          description: invalid budgetId or categories or amounts
+        '422':
+          description: the categories and amounts provided exceeds the total budget
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+    delete:
+      summary: remove a category from a budget
+      tags:
+        - category
+      operationId: removeCategoryFromBudget
+      description: |
+        By providing a valid budgetId and category, the category will be removed from the budget.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to remove a category from
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: category
+          description: provide the category you want to remove from the budget
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: category removed from budget successfully
+        '400':
+          description: invalid budgetId or category
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+  /budgets/{budgetId}/categories/{category}/available-funds:
+    get:
+      tags:
+        - funds
+      summary: get the available funds for a category
+      operationId: getBudgetCategoryAvailableFunds
+      description: |
+        By providing a valid budgetId and category, the available funds for the category will be returned.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to get available funds for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: category
+          description: provide the category you want to get available funds for
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: available funds returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  availableFunds:
+                    type: number
+                    format: float
+                    minimum: 0
+                    example: 1000
+        '400':
+          description: invalid budgetId or category
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget or category not found
+        '500':
+          description: something went wrong on the server
+  /budgets/{budgetId}/categories/{category}/expenses:
+    get:
+      summary: get a list of expenses for a category
+      tags:
+        - expense
+      operationId: getBudgetCategoryExpenses
+      description: |
+        By providing a valid budgetId and category, the expenses for the category will be returned.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to get expenses for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: category
+          description: provide the category you want to get expenses for
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: expenses returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                      example: '2021-01-01'
+                    time:
+                      type: string
+                      format: time
+                      example: '12:00'
+                    amount:
+                      type: number
+                      format: float
+                      minimum: 0
+                      example: 100
+                    description:
+                      type: string
+                      example: 'Bought some bread'
+                    id:
+                      type: string
+                      format: uuid
+                      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        '400':
+          description: invalid budgetId or category
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget or category not found
+        '500':
+          description: something went wrong on the server
+    post:
+      summary: add an expense to a category
+      tags:
+        - expense
+      operationId: addExpenseToBudgetCategory
+      description: |
+        By providing a valid budgetId, category, amount and description, the expense will be added to the category.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to add an expense to
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: category
+          description: provide the category you want to add an expense to
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: amount
+          description: provide the amount you want to add to the category
+          required: true
+          schema:
+            type: number
+            format: float
+            minimum: 0
+        - in: query
+          name: description
+          description: provide a description for the expense
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: expense added to category successfully
+        '400':
+          description: invalid budgetId or category or amount or description
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget or category not found
+        '500':
+          description: something went wrong on the server
+  /budgets/{budgetId}/categories/{category}/expenses/{expenseId}:
+    put:
+      summary: update an expense for a category
+      tags:
+        - expense
+      operationId: updateBudgetCategoryExpense
+      description: |
+        By providing a valid budgetId, category, expenseId, amount and description, the expense will be updated.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to update an expense for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: category
+          description: provide the category you want to update an expense for
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: expenseId
+          description: provide the id of the expense you want to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: amount
+          description: provide the amount you want to update for the expense
+          required: true
+          schema:
+            type: number
+            format: float
+            minimum: 0
+        - in: query
+          name: description
+          description: provide a description for the expense
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: expense updated successfully
+        '400':
+          description: invalid budgetId or category or expenseId or amount or description
+        '401':
+          description: invalid authentication
+        '422':
+          description: the expense amount provided exceeds the category amount
+        '404':
+          description: budget or category or expense not found
+        '500':
+          description: something went wrong on the server
+    delete:
+      summary: remove an expense from a category
+      tags:
+        - expense
+      operationId: removeBudgetCategoryExpense
+      description: |
+        By providing a valid budgetId, category and expenseId, the expense will be removed from the category.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to remove an expense from
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: category
+          description: provide the category you want to remove an expense from
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: expenseId
+          description: provide the id of the expense you want to remove
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: expense removed successfully
+        '400':
+          description: invalid budgetId or category or expenseId
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget or category or expense not found
+        '500':
+          description: something went wrong on the server
+  /budgets/{budgetId}/available-funds:
+    get:
+      tags:
+        - funds
+      summary: get the available funds for a budget
+      operationId: getBudgetAvailableFunds
+      description: |
+        By providing a valid budgetId, the available funds for the budget will be returned.
+      parameters:
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to get available funds for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: available funds returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  availableFunds:
+                    type: number
+                    format: float
+                    minimum: 0
+                    example: 1000
+        '400':
+          description: invalid budgetId
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+
+  /webhooks/budgets/{budgetId}/categories/{category}/expense-added:
+    get:
+      summary: checks if a webhook is registered for this budget and category for the user
+      tags:
+        - webhook
+      operationId: getExpenseAddedWebhook
+      description: |
+        By providing a valid budgetId and category, the user will be returned a boolean if a webhook is registered.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to get a webhook for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: category
+          description: provide the category you want to get a webhook for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: webhook found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  registered:
+                    type: boolean
+                    example: true
+                  url:
+                    type: string
+                    format: url
+                    example: 'https://example.com'
+        '400':
+          description: invalid budgetId or category
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget or category not found
+        '500':
+          description: something went wrong on the server
+    post:
+      summary: register a webhook for when an expense is added to a category
+      tags:
+        - webhook
+      operationId: registerExpenseAddedWebhook
+      description: |
+        By providing a valid budgetId, category and a webhook url, the webhook will be registered.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to register a webhook for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: category
+          description: provide the category you want to register a webhook for
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: url
+          description: provide the url for the webhook
+          required: true
+          schema:
+            type: string
+            format: url
+        - in: query
+          name: secret
+          description: provide a secret for the webhook
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: webhook registered successfully
+        '400':
+          description: invalid budgetId or category or url or secret
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget or category not found
+        '500':
+          description: something went wrong on the server
+    delete:
+      summary: remove a webhook for when an expense is added to a category
+      tags:
+        - webhook
+      operationId: removeExpenseAddedWebhook
+      description: |
+        By providing a valid budgetId, category and a webhook url, the webhook will be removed.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to remove a webhook for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: category
+          description: provide the category you want to remove a webhook for
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: url
+          description: provide the url for the webhook
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: webhook removed successfully
+        '400':
+          description: invalid budgetId or category or url
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget or category not found
+        '500':
+          description: something went wrong on the server
+  /webhooks/budgets/{budgetId}/available-funds-below-limit:
+    get:
+      summary: checks if a webhook is registered for this budget for the user
+      tags:
+        - webhook
+      operationId: getAvailableFundsLowWebhook
+      description: |
+        By providing a valid budgetId, the user will be returned a boolean if a webhook is registered.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to get a webhook for
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: webhook found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  registered:
+                    type: boolean
+                    example: true
+                  url:
+                    type: string
+                    format: url
+                    example: 'https://example.com'
+        '400':
+          description: invalid budgetId
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+    post:
+      summary: register a webhook for when the available funds for a budget is low
+      tags:
+        - webhook
+      operationId: registerAvailableFundsLowWebhook
+      description: |
+        By providing a valid budgetId and a webhook url, the webhook will be registered.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to register a webhook for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: limit
+          description: provide the limit for the available funds
+          required: true
+          schema:
+            type: number
+            format: float
+            minimum: 0
+        - in: query
+          name: url
+          description: provide the url for the webhook
+          required: true
+          schema:
+            type: string
+            format: url
+        - in: query
+          name: secret
+          description: provide a secret for the webhook
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: webhook registered successfully
+        '400':
+          description: invalid budgetId or url or secret
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+    delete:
+      summary: remove a webhook for when the available funds for a budget is low
+      tags:
+        - webhook
+      operationId: removeAvailableFundsLowWebhook
+      description: |
+        By providing a valid budgetId and a webhook url, the webhook will be removed.
+      parameters:
+        - in: header
+          name: authentication
+          description: provide your JWT
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: budgetId
+          description: provide the id of the budget you want to remove a webhook for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: url
+          description: provide the url for the webhook
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: webhook removed successfully
+        '400':
+          description: invalid budgetId or url
+        '401':
+          description: invalid authentication
+        '404':
+          description: budget not found
+        '500':
+          description: something went wrong on the server
+
+components:
+  schemas:
+    docs:
+      type: object
+      required:
+        - API-Documentation
+      properties:
+        API-Documentation:
+          type: string
+          format: url
+          example: 'https://app.swaggerhub.com/apis-docs/JK224JV/Personal-Budget/1.0.0#/'
+        Links:
+          $ref: '#/components/schemas/NonAuthenticatedLinks'
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - email
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        username:
+          type: string
+          example: BetaTester42
+        email:
+          type: string
+          format: email
+          example: tester@test.com
+
+    Budget:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - startDate
+        - period
+        - categories
+        - amounts
+        - totaltBudget
+        - userAccess
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: My Budget
+        description:
+          type: string
+          example: My first budget
+        startDate:
+          type: string
+          format: date
+          example: '2021-01-01'
+        period:
+          type: string
+          enum:
+            - daily
+            - weekly
+            - monthly
+            - yearly
+          example: monthly
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+                example: food
+              amount:
+                type: number
+                format: float
+                minimum: 0
+                example: 1000
+          example: [{category: food, amount: 1000}, {category: rent, amount: 500}, {category: transport, amount: 200}, {category: savings, amount: 300}, {category: other, amount: 100}]
+        totaltBudget:
+          type: number
+          format: float
+          minimum: 0
+          example: 2100
+        userAccess:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                format: uuid
+                example: d290f1ee-6c54-4b01-90e6-d701748f0851
+              access:
+                type: string
+                enum:
+                  - owner
+                  - read
+                  - write
+                example: owner
+          example: [{userId: d290f1ee-6c54-4b01-90e6-d701748f0851, access: owner}, {userId: d290f1ee-6c54-4b01-90e6-d701748f0851, access: read}]
+    NonAuthenticatedLinks:
+      type: array
+      items:
+        type: object
+        properties:
+          rel:
+            type: string
+            example: "login"
+          method:
+            type: string
+            example: "GET"
+          url:
+            type: string
+            format: url
+            example: 'https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/login'
+      example: [
+        {rel: "login", method: "GET", url: "https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/login"}, {rel: "register", method: "POST", url: "https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/user"}
+      ]
+    AuthenticatedLinks:
+      type: array
+      items:
+        type: object
+        properties:
+          logout:
+            type: string
+            format: url
+            example: 'https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/logout'
+          view budgets:
+            type: string
+            format: url
+            example: 'https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/budgets'
