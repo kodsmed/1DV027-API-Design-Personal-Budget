@@ -1439,7 +1439,7 @@ components:
         API-Documentation:
           type: string
           format: url
-          example: 'https://example.com/api-docs'
+          example: 'https://app.swaggerhub.com/apis-docs/JK224JV/Personal-Budget/1.0.0#/'
         Links:
           $ref: '#/components/schemas/NonAuthenticatedLinks'
     User:
@@ -1547,25 +1547,20 @@ components:
           url:
             type: string
             format: url
-            example: 'https://example.com/api/v1/users/login'
+            example: 'https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/login'
       example: [
-        {rel: "login", method: "GET", url: "https://example.com/api/v1/users/login"}, {rel: "register", method: "POST", url: "https://example.com/api/v1/users"}
+        {rel: "login", method: "GET", url: "https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/login"}, {rel: "register", method: "POST", url: "https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/user"}
       ]
     AuthenticatedLinks:
       type: array
       items:
         type: object
         properties:
-          rel:
-            type: string
-            example: "logout"
-          method:
-            type: string
-            example: "GET"
-          url:
+          logout:
             type: string
             format: url
-            example: 'https://example.com/api/v1/users/logout'
-      example: [
-        {rel: "login", method: "GET", url: "https://example.com/api/v1/users/login"}, {rel: "register", method: "POST", url: "https://example.com/api/v1/users"}
-      ]
+            example: 'https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/logout'
+          view budgets:
+            type: string
+            format: url
+            example: 'https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0/budgets'
