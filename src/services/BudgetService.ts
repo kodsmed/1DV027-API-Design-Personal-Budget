@@ -48,7 +48,7 @@ export class BudgetService {
       const errorMessage = 'Failed to create the budget.'
       throw new ExtendedError(errorMessage, 500, new Error(errorMessage), 'BudgetService.addBudget')
     }
-    budget.id = id
+    sanitizedBudget.id = id
     return sanitizedBudget
   }
 
