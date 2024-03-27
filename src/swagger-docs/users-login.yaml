@@ -1,0 +1,195 @@
+paths:
+  /api/v1/users/login:
+    post:
+      summary: User login
+      tags:
+        - authentication
+      description: Authenticates a user by their email and password, returns access and refresh tokens along with user data.
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The email of the user.
+                  example: "user@example.com"
+                password:
+                  type: string
+                  format: password
+                  description: The password of the user.
+                  example: "securePassword123!"
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: "User logged in successfully"
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/UserData'
+                      accessToken:
+                        type: string
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI..."
+                      refreshToken:
+                        type: string
+                        example: "dXRoX2lkIjpudWxsLCJ..."
+                  Links:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HateoasLink'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "Invalid credentials"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorHateoasLink'
+        '403':
+          description: Forbidden - Already logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    UserData:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "user_8hx4er"
+        email:
+          type: string
+          format: email
+          example: "user_8hx4er@example.com"
+        password:
+          type: string
+          format: password
+          example: "**********"
+        uuid:
+          type: string
+          example: "d1656ffc-62c3-4eac-a7c2-7bce93c8c5ee"
+        id:
+          type: string
+          example: "66045c791edc0214458ae0e7"
+    HateoasLink:
+      type: object
+      properties:
+        rel:
+          type: string
+          example: "update"
+        href:
+          type: string
+          example: "http://localhost:8080/api/v1/users"
+        method:
+          type: string
+          example: "PUT"
+      example:
+        - rel: "update"
+          href: "http://localhost:8080/api/v1/users"
+          method: "PUT"
+        - rel: "unregister"
+          href: "http://localhost:8080/api/v1/users"
+          method: "DELETE"
+        - rel: "logout"
+          href: "http://localhost:8080/api/v1/users/logout"
+          method: "GET"
+        - rel: "budgets"
+          href: "http://localhost:8080/api/v1/budgets"
+          method: "GET"
+    ForbiddenResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 403
+        status:
+          type: string
+          example: "Forbidden"
+        message:
+          type: string
+          example: "To save power by avoiding unnecessary cryptographic operations, please logout first."
+        data:
+          type: object
+          example: {}
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateoasLink'
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 500
+        status:
+          type: string
+          example: "Error"
+        message:
+          type: string
+          example: "Internal server error"
+        data:
+          type: object
+          example: {}
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorHateoasLink'
+    ErrorHateoasLink:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        method:
+          type: string
+      example:
+        - rel: "login"
+          href: "http://localhost:8080/api/v1/users/login"
+          method: "POST"
+        - rel: "register"
+          href: "http://localhost:8080/api/v1/users"
+          method: "POST"
