@@ -167,7 +167,6 @@ export class BudgetController {
         new HateoasLink('unregister', `${baseLink}/users`, 'DELETE'),
         new HateoasLink('get categories', `${baseLink}/categories`, 'GET'),
         new HateoasLink('create category', `${baseLink}/categories`, 'POST'),
-        new HateoasLink('get total budget', `${baseLink}/budgets/${budgetId}/total-funds`, 'GET')
       ])
 
       const customResponse = new CustomResponse(200, 'OK', 'Budget retrieved successfully', budget, hateoas, {})
