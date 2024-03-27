@@ -1,0 +1,154 @@
+paths:
+  /budgets/{budgetId}:
+    put:
+      summary: Update a budget
+      tags:
+        - budgets
+      description: Updates the specified budget by its unique identifier.
+      operationId: updateBudget
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: budgetId
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the budget to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                budgetName:
+                  type: string
+                  example: "My Monthly spendings"
+                budgetDescription:
+                  type: string
+                  example: "my personal budget"
+                budgetIteration:
+                  type: string
+                  example: "monthly"
+                budgetStartDate:
+                  type: string
+                  example: "2024-03-28"
+      responses:
+        '200':
+          description: Budget updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: "Budget updated successfully"
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    example:
+                      - rel: "create budget"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "POST"
+                      - rel: "get budgets"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "GET"
+                      - rel: "getById"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "update"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "PUT"
+                      - rel: "delete"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "DELETE"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+        '400':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "Validation failed"
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    example:
+                      - rel: "create budget"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "POST"
+                      - rel: "get budgets"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+        '401':
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/401ErrorResponse'
+        '500':
+          description: Internal server error or unknown error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 500
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "Internal Server Error"
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    example:
+                      - rel: "create budget"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "POST"
+                      - rel: "get budgets"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "GET"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
