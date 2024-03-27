@@ -24,7 +24,7 @@ export class BudgetController {
   /**
    * Creates a budget.
    *
-   * @see swagger-docs/budgets-post.yml
+   * @see /swagger-docs/budgets-post.yml
    */
   async createBudget(req: express.Request, res: express.Response, next: express.NextFunction) {
     try {
@@ -70,7 +70,7 @@ export class BudgetController {
   /**
    * Gets all budgets the user has access to.
    *
-   * @see swagger-docs/budgets-get.yml
+   * @see /swagger-docs/budgets-get.yml
    */
   async getBudgets(req: express.Request, res: express.Response, next: express.NextFunction) {
 
@@ -148,6 +148,8 @@ export class BudgetController {
 
   /**
    * Gets a budget by its id.
+   *
+   * @see /swagger-docs/budgetid-get.yml
    */
   async getBudgetById(req: express.Request, res: express.Response, next: express.NextFunction) {
     try {
@@ -163,10 +165,10 @@ export class BudgetController {
         new HateoasLink('get budgets', `${baseLink}/budgets`, 'GET'),
         new HateoasLink('update', `${baseLink}/budgets/${budgetId}`, 'PUT'),
         new HateoasLink('delete', `${baseLink}/budgets/${budgetId}`, 'DELETE'),
+        new HateoasLink('get categories', `${baseLink}/budgets/${budgetId}/categories`, 'GET'),
+        new HateoasLink('create category', `${baseLink}/budgets/${budgetId}/categories`, 'POST'),
         new HateoasLink('logout', `${baseLink}/users/logout`, 'POST'),
         new HateoasLink('unregister', `${baseLink}/users`, 'DELETE'),
-        new HateoasLink('get categories', `${baseLink}/categories`, 'GET'),
-        new HateoasLink('create category', `${baseLink}/categories`, 'POST'),
       ])
 
       const customResponse = new CustomResponse(200, 'OK', 'Budget retrieved successfully', budget, hateoas, {})
@@ -178,9 +180,6 @@ export class BudgetController {
         new HateoasLink('get budgets', `${baseLink}/budgets`, 'GET'),
         new HateoasLink('logout', `${baseLink}/users/logout`, 'POST'),
         new HateoasLink('unregister', `${baseLink}/users`, 'DELETE'),
-        new HateoasLink('get categories', `${baseLink}/categories`, 'GET'),
-        new HateoasLink('get category by id', `${baseLink}/categories/:id`, 'GET'),
-        new HateoasLink('create category', `${baseLink}/categories`, 'POST'),
       ])
 
       let code = 500
@@ -197,6 +196,8 @@ export class BudgetController {
 
   /**
    * Updates a budget by its id with the provided data.
+   *
+   * @see /swagger-docs/budgetid-put.yml
    */
   async updateBudget(req: express.Request, res: express.Response, next: express.NextFunction) {
     try {
@@ -211,6 +212,7 @@ export class BudgetController {
         new HateoasLink('create budget', `${baseLink}/budgets`, 'POST'),
         new HateoasLink('get budgets', `${baseLink}/budgets`, 'GET'),
         new HateoasLink('getById', `${baseLink}/budgets/${budgetId}`, 'GET'),
+        new HateoasLink('update', `${baseLink}/budgets/${budgetId}`, 'PUT'),
         new HateoasLink('delete', `${baseLink}/budgets/${budgetId}`, 'DELETE'),
         new HateoasLink('logout', `${baseLink}/users/logout`, 'POST'),
         new HateoasLink('unregister', `${baseLink}/users`, 'DELETE')
@@ -241,6 +243,8 @@ export class BudgetController {
 
   /**
    * Deletes a budget by its id.
+   *
+   * @see /swagger-docs/budgetid-delete.yml
    */
   async deleteBudget(req: express.Request, res: express.Response, next: express.NextFunction) {
     try {

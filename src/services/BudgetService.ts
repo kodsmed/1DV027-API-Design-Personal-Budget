@@ -14,7 +14,6 @@ import { UserAccess } from "../models/UserAccess.js"
 import { UUID } from "../lib/types/UUID.js"
 import { ExtendedError } from "../lib/types/ExtendedError.js"
 import { checkUserAccess } from "../util/validator.js"
-import mongoose from "mongoose"
 
 /**
  * The BudgetService class.
@@ -34,7 +33,9 @@ export class BudgetService {
   }
 
   /**
-   * Adds a budget to the
+   * Adds a budget to the database.
+   *
+   *
    */
   async addBudget(budget: Budget): Promise<Budget> {
     const sanitizedBudget = new Budget(budget.budgetName, budget.budgetDescription, budget.budgetStartDate, budget.budgetIteration, budget.ownerUUID, budget.categories, budget.userAccess)
