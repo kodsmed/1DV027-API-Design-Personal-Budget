@@ -76,7 +76,7 @@ paths:
             type: string
         - in: query
           name: password
-          description: provide a passord to use for authentication (12-156 characters)
+          description: provide a passord to use for authentication (12-256 characters)
           required: true
           schema:
             type: string
@@ -503,10 +503,9 @@ paths:
                     access:
                       type: string
                       enum:
-                        - owner
                         - read
                         - write
-                      example: owner
+                      example: read
         '400':
           description: invalid budgetId
         '401':
