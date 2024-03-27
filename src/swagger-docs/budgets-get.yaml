@@ -60,6 +60,12 @@ paths:
                       $ref: '#/components/schemas/HateoasLink'
                   pagination:
                     $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/401ErrorResponse'
         '500':
           description: Internal server error or unknown error occurred
           content:
