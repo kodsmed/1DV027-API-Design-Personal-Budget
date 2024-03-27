@@ -1,0 +1,208 @@
+openapi: 3.0.0
+info:
+  title: Personal Budget API
+  version: '1.0.0'
+  description: API that allows users to create and manage personal budgets.
+  contact:
+    email: 'contact@example.com'
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+servers:
+  - url: 'http://localhost:8080/api/v1'
+paths:
+  /budgets:
+    get:
+      summary: Get all budgets
+      tags:
+        - budgets
+      description: Retrieves all budgets the user has access to. Pagination is optional.
+      operationId: getBudgets
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: Page number for pagination.
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+          required: false
+          description: Number of items per page for pagination.
+      responses:
+        '200':
+          description: A list of budgets.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: ""
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BudgetData'
+                  Links:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HateoasLink'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '500':
+          description: Internal server error or unknown error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBudgetsErrorResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    BudgetData:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "66048190f3c412ee4332c98d"
+        budgetName:
+          type: string
+          example: "Monthly spendings"
+        budgetDescription:
+          type: string
+          example: "my personal budget"
+        budgetStartDate:
+          type: string
+          example: "2024-03-28T00:00:00.000Z"
+        budgetIteration:
+          type: string
+          example: "monthly"
+          enum:
+            - daily
+            - weekly
+            - monthly
+            - yearly
+        ownerUUID:
+          type: string
+          example: "d1665ffc-62c3-4eac-a7c2-7bcc93c8c5ee"
+          format: uuid
+        userAccess:
+          type: array
+          items:
+            type: object
+            properties:
+              userUUID:
+                type: string
+                example: "d1665ffc-62c3-4eac-a7c2-7bcc93c8c5ee"
+                format: uuid
+              accessLevel:
+                type: string
+                example: "owner"
+                enum:
+                  - owner
+                  - read
+                  - write
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              categoryID:
+                type: string
+                example: "66048190f3c412ee4332c98d"
+              categoryName:
+                type: string
+                example: "Groceries"
+              categoryBudget:
+                type: number
+                example: 100
+              expenses:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    ownerUUID:
+                      type: string
+                      example: "d1665ffc-62c3-4eac-a7c2-7bcc93c8c5ee"
+                      format: uuid
+                    date:
+                      type: string
+                      example: "2024-03-28T00:00:00.000Z"
+                    amount:
+                      type: number
+                      example: 50
+                    note:
+                      type: string
+                      example: "Bought groceries for the week"
+
+    HateoasLink:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        method:
+          type: string
+      example:
+        - rel: "getById"
+          href: "http://localhost:8080/api/v1/budgets/660481b2f3c412ee4332c9ec"
+          method: "GET"
+        - rel: "logout"
+          href: "http://localhost:8080/api/v1/users/logout"
+          method: "POST"
+        - rel: "unregister"
+          href: "http://localhost:8080/api/v1/users"
+          method: "DELETE"
+
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        perPage:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 1
+        totalPages:
+          type: integer
+          example: 1
+      example: {}
+
+    GetBudgetsErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 500
+        status:
+          type: string
+          example: "Error"
+        message:
+          type: string
+          example: "Internal Server Error"
+        data:
+          type: object
+          example: {}
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateoasLink'
