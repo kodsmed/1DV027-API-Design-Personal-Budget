@@ -49,7 +49,7 @@ export class BudgetService {
       throw new ExtendedError(errorMessage, 500, new Error(errorMessage), 'BudgetService.addBudget')
     }
     budget.id = id
-    return budget
+    return sanitizedBudget
   }
 
   /**
