@@ -101,7 +101,7 @@ export class ExpenseController {
       } else {
         timestamp = new Date()
       }
-      const expense = new Expense(userId, timestamp, req.body.amount, req.body.note || null)
+      const expense = new Expense(userId, timestamp, parseInt(req.body.amount), req.body.note || null)
       const updatedBudget = this.expenseService.updateExpense(budget, categoryId, expenseId, expense, userId)
       const message = 'Expense updated successfully'
       const statusCode = 200
