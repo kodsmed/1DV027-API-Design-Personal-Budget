@@ -1,0 +1,129 @@
+paths:
+  /users:
+    put:
+      summary: Update user details
+      tags:
+        - users
+      description: Updates the details of the current user. Requires an authentication token.
+      operationId: changeUserDetails
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserData'
+      responses:
+        '200':
+          description: User details updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomResponse'
+        '400':
+          description: Bad Request - Validation failed or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/401ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    UserData:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "SomeOtherUsername"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          example: "newSecurePassword123!"
+    HateoasLink:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        method:
+          type: string
+      example:
+        - rel: "update"
+          href: "http://localhost:8080/api/v1/users"
+          method: "PUT"
+        - rel: "delete"
+          href: "http://localhost:8080/api/v1/users"
+          method: "DELETE"
+        - rel: "logout"
+          href: "http://localhost:8080/api/v1/users/logout"
+          method: "GET"
+        - rel: "getBudgets"
+          href: "http://localhost:8080/api/v1/budgets"
+          method: "GET"
+    CustomResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 200
+        status:
+          type: string
+          example: "OK"
+        message:
+          type: string
+          example: "User details updated successfully"
+        data:
+          $ref: '#/components/schemas/UserData'
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateoasLink'
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        status:
+          type: string
+          example: "Error"
+        message:
+          type: string
+          example: "Validation failed"
+        data:
+          type: object
+          example: {}
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateoasLink'
+      example:
+        statusCode: 400
+        status: "Error"
+        message: "Validation failed"
+        data: {}
+        Links:
+          - rel: "register"
+            href: "http://localhost:8080/api/v1/users/register"
+            method: "POST"
+          - rel: "login"
+            href: "http://localhost:8080/api/v1/users/login"
+            method: "POST"
