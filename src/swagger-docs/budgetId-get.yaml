@@ -1,0 +1,152 @@
+paths:
+  /budgets/{budgetId}:
+    get:
+      summary: Retrieve a specific budget
+      tags:
+        - budgets
+      description: Retrieves the details of a specific budget by its ID.
+      operationId: getBudgetById
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: budgetId
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the budget
+      responses:
+        '200':
+          description: Budget retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: "Budget retrieved successfully"
+                  data:
+                    $ref: '#/components/schemas/BudgetData'
+                  Links:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HateoasLink'
+        '500':
+          description: Internal server error or unknown error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBugdgetByIdErrorResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    BudgetData:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            type: string
+        ownerUUID:
+          type: string
+        userAccess:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAccess'
+        budgetName:
+          type: string
+        budgetDescription:
+          type: string
+        budgetStartDate:
+          type: string
+        budgetIteration:
+          type: string
+        id:
+          type: string
+    UserAccess:
+      type: object
+      properties:
+        userUUID:
+          type: string
+        accessLevel:
+          type: string
+    HateoasLink:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        method:
+          type: string
+      example:
+        - rel: "create budget"
+          href: "http://localhost:8080/api/v1/budgets"
+          method: "POST"
+        - rel: "get budgets"
+          href: "http://localhost:8080/api/v1/budgets"
+          method: "GET"
+        - rel: "update"
+          href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+          method: "PUT"
+        - rel: "delete"
+          href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+          method: "DELETE"
+        - rel: "get categories"
+          href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+          method: "GET"
+        - rel: "create category"
+          href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+          method: "POST"
+        - rel: "logout"
+          href: "http://localhost:8080/api/v1/users/logout"
+          method: "POST"
+        - rel: "unregister"
+          href: "http://localhost:8080/api/v1/users"
+          method: "DELETE"
+    GetBugdgetByIdErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        status:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+        Links:
+          type: array
+          items:
+            type: object
+            properties:
+              rel:
+                type: string
+              href:
+                type: string
+              method:
+                type: string
+            example:
+              - rel: "create budget"
+                href: "http://localhost:8080/api/v1/budgets"
+                method: "POST"
+              - rel: "get budgets"
+                href: "http://localhost:8080/api/v1/budgets"
+                method: "GET"
+              - rel: "logout"
+                href: "http://localhost:8080/api/v1/users/logout"
+                method: "POST"
+              - rel: "unregister"
+                href: "http://localhost:8080/api/v1/users"
+                method: "DELETE"
