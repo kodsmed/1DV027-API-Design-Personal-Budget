@@ -1,0 +1,53 @@
+paths:
+  /:
+    get:
+      summary: API Documentation
+      description: Returns the API documentation link and HATEOAS links for login and registration.
+      tags:
+        - documentation
+      operationId: getApiDocumentation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Welcome to the Personal Budget API
+                  documentation:
+                    type: string
+                    example: http://localhost:3000/api-docs
+                  links:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rel:
+                          type: string
+                          example: login
+                        href:
+                          type: string
+                          example: http://localhost:3000/api/users/login
+                        method:
+                          type: string
+                          example: POST
+                    example:
+                      - rel: login
+                        href: http://localhost:3000/api/users/login
+                        method: POST
+                      - rel: register
+                        href: http://localhost:3000/api/users/register
+                        method: POST
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
