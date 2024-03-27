@@ -8,6 +8,7 @@ import { ExpenseAddedWebhook } from "../models/ExpenseAddedWebhook.js"
 import { ExpenseAddedWebhookRepository } from "../repositories/ExpenseAddedWebhookRepository.js"
 import { IAddedExpenseWebhook, ExpenseAddedWebhookModel } from "../models/schemas/ExpenseAddedWebhookSchema.js"
 import { ExtendedError } from "../lib/types/ExtendedError.js"
+import { Expense } from "../models/Expense.js"
 
 /**
  * The WebhookService class.
@@ -29,7 +30,7 @@ export class WebhookService {
   /**
    * Registers a new webhook.
    */
-  async registerWebhook(webhook: IAddedExpenseWebhook, host: string, uuid: string): Promise<ExpenseAddedWebhook> {
+  async registerWebhook(webhook: IAddedExpenseWebhook, uuid: string): Promise<ExpenseAddedWebhook> {
     if (!webhook.ownerUUID) {
       throw new ExtendedError('Invalid webhook.', 400, new Error('Invalid webhook.'), 'WebhookService.registerWebhook')
     }
@@ -48,11 +49,6 @@ export class WebhookService {
 
     // is the owner the same as the user?
     if (webhook.ownerUUID !== uuid) {
-      throw new ExtendedError('Invalid webhook.', 401, new Error('Invalid webhook.'), 'WebhookService.registerWebhook')
-    }
-
-    // Is the host the same as the host in the webhook?
-    if (!webhook.url.includes(host)) {
       throw new ExtendedError('Invalid webhook.', 401, new Error('Invalid webhook.'), 'WebhookService.registerWebhook')
     }
 
@@ -81,6 +77,43 @@ export class WebhookService {
   }
 
   private generateWebhookObject(webhookDoc: IAddedExpenseWebhook): ExpenseAddedWebhook {
-    return new ExpenseAddedWebhook(webhookDoc.ownerUUID, webhookDoc.url,  webhookDoc.secret, webhookDoc.budgetIDtoMonitor, webhookDoc.categoryToMonitor)
+    return new ExpenseAddedWebhook(webhookDoc.ownerUUID, webhookDoc.url,  webhookDoc.secret, webhookDoc.budgetIdToMonitor, webhookDoc.categoryToMonitor)
+  }
+
+  /**
+   * Triggers the webhook.
+   */
+  async triggerWebhookIfApplicable(uuid: string, expense: Expense, budgetId: string, categoryId: number): Promise<void> {
+    if (!uuid) {
+      throw new Error('Owner UUID is missing.')
+    }
+    // does the webhook exist?
+    try {
+      const existingWebhook = await this.repository.getOneByQuery({ ownerUUID: uuid }) as IAddedExpenseWebhook
+      if (!existingWebhook) {
+        throw new Error('Webhook does not exist.')
+      }
+
+      if (existingWebhook.budgetIdToMonitor !== budgetId || existingWebhook.categoryToMonitor !== categoryId) {
+        return
+      }
+
+      // trigger the webhook
+      const url = existingWebhook.url
+      const secret = existingWebhook.secret
+      await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          secret: secret,
+          expense: expense,
+        }),
+      })
+
+    } catch (error) {
+      throw new Error('Failed to trigger webhook.')
+    }
   }
 }

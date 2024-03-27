@@ -5,7 +5,7 @@ export class ExpenseAddedWebhook {
   ownerUUID: string = ''
   url: string = ''
   secret: string = ''
-  budgetIDtoMonitor: string = ''
+  budgetIdToMonitor: string = ''
   categoryToMonitor: number = 0
   /**
    * Creates an instance of the ExpenseAddedWebhook class.
@@ -13,11 +13,11 @@ export class ExpenseAddedWebhook {
    * @param {string} url - The URL to send the webhook to.
    * @param {string} token - The token to use for the webhook.
    */
-  constructor(ownerUUID: string, url: string, token: string, budgetIDtoMonitor: string, categoryToMonitor: number) {
+  constructor(ownerUUID: string, url: string, token: string, budgetIdToMonitor: string, categoryToMonitor: number) {
     this.setOwnerUUID(ownerUUID)
     this.setUrl(url)
     this.setSecret(token)
-    this.setBudgetIDtoMonitor(budgetIDtoMonitor)
+    this.setBudgetIDtoMonitor(budgetIdToMonitor)
     this.setCategoryToMonitor(categoryToMonitor)
   }
 
@@ -71,13 +71,13 @@ export class ExpenseAddedWebhook {
   /**
    * Sets the budget ID to monitor.
    *
-   * @param {string} budgetIDtoMonitor - The budget ID to monitor.
+   * @param {string} budgetIdToMonitor - The budget ID to monitor.
    */
-  setBudgetIDtoMonitor(budgetIDtoMonitor: string) {
-    if (!budgetIDtoMonitor || typeof budgetIDtoMonitor !== 'string') {
+  setBudgetIDtoMonitor(budgetIdToMonitor: string) {
+    if (!budgetIdToMonitor || typeof budgetIdToMonitor !== 'string') {
       throw new Error('budgetIDtoMonitor must be a string.')
     }
-    this.budgetIDtoMonitor = budgetIDtoMonitor
+    this.budgetIdToMonitor = budgetIdToMonitor
   }
 
   /**

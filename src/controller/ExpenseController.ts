@@ -11,15 +11,17 @@ import { Hateoas, HateoasLink } from '../models/Hateoas.js'
 import { getBaseLink } from '../util/hateoas.js'
 import { ExtendedError } from '../lib/types/ExtendedError.js'
 import { Pagination } from '../repositories/RepositoryBase.js'
-import { time } from 'console'
+import { WebhookController } from './WebhookController.js'
 
 export class ExpenseController {
   private expenseService: ExpenseService;
   private budgetService: BudgetService;
+  private webhookController: WebhookController;
 
-  constructor(expenseService: ExpenseService, budgetservice: BudgetService) {
+  constructor(expenseService: ExpenseService, budgetservice: BudgetService, webhookController: WebhookController) {
     this.expenseService = expenseService,
-      this.budgetService = budgetservice
+      this.budgetService = budgetservice,
+      this.webhookController = webhookController
   }
 
   /**
@@ -59,6 +61,7 @@ export class ExpenseController {
       ])
       const responseObject = new CustomResponse(statusCode, status, message, updatedBudget, hateoas, {})
       res.status(201).json(responseObject)
+      this.webhookController.triggerWebhook(req, expense, budgetId, categoryId)
     } catch (error) {
       let code = 500
       let message = 'Internal server error'

@@ -8,7 +8,7 @@ export interface IAddedExpenseWebhook extends mongoose.Document {
   ownerUUID: string
   url: string
   secret: string
-  budgetIDtoMonitor: string
+  budgetIdToMonitor: string
   categoryToMonitor: number
 }
 
@@ -31,7 +31,7 @@ const schema = new mongoose.Schema({
     minLength: [8, 'The secret must be of minimum length 8 characters.'],
     maxLength: [256, 'The secret must be of maximum length 256 characters.']
   },
-  budgetIDtoMonitor: {
+  budgetIdToMonitor: {
     type: String,
     required: [true, 'Budget ID to monitor is required.']
   },

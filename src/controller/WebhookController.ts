@@ -8,6 +8,7 @@ import { Hateoas } from '../models/Hateoas.js'
 import { WebhookService } from '../services/WebhookService.js'
 import { ExtendedError } from '../lib/types/ExtendedError.js'
 import { CustomResponse } from '../lib/types/CustomResponse.js'
+import { Expense } from '../models/Expense.js'
 
 
 export class WebhookController {
@@ -28,7 +29,7 @@ export class WebhookController {
     try {
       const uuid = req.UUID || ''
       const host = req.get('host') || ''
-      const webhook = await this.webhookService.registerWebhook(req.body, host, uuid)
+      const webhook = await this.webhookService.registerWebhook(req.body, uuid)
       const responseObject = new CustomResponse(201, 'Webhook registered', 'Webhook registration successful', webhook, new Hateoas([]), {})
       res.status(201).json(responseObject)
     } catch (error) {
@@ -64,4 +65,17 @@ export class WebhookController {
     }
   }
 
+  /**
+   * Trigger the webhook.
+   */
+  async triggerWebhook(req: express.Request, expense: Expense, budgetId: string, categoryId: number) {
+    try {
+      const uuid = req.UUID || ''
+
+      // get the webhook
+      this.webhookService.triggerWebhookIfApplicable(uuid, expense, budgetId, categoryId)
+
+    } catch (error) {
+    }
+  }
 }
