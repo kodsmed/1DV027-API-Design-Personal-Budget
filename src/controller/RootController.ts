@@ -25,6 +25,8 @@ export class RootController {
 
   /**
    * Returns the API documentation.
+   *
+   * @see swagger-docs/root.yml
    */
   async returnApiDocumentation(req: express.Request, res: express.Response, next: express.NextFunction) {
     const protocol = req.protocol
