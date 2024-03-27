@@ -23,6 +23,8 @@ export class BudgetController {
 
   /**
    * Creates a budget.
+   *
+   * @see swagger-docs/budgets-post.yml
    */
   async createBudget(req: express.Request, res: express.Response, next: express.NextFunction) {
     try {
@@ -67,19 +69,23 @@ export class BudgetController {
 
   /**
    * Gets all budgets the user has access to.
+   *
+   * @see swagger-docs/budgets-get.yml
    */
   async getBudgets(req: express.Request, res: express.Response, next: express.NextFunction) {
-    try {
+
       const userUUID = req.UUID as string
       const page = req.query.page as string | undefined
       const perPage = req.query.perPage as string | undefined
 
-      let pagination
+      let pagination = undefined
       if (page && perPage) {
         pagination = { page: parseInt(page), perPage: parseInt(perPage) }
       }
 
       const budgets = await this.budgetService.getBudgets(userUUID, pagination)
+      const totalItems = budgets.length
+      console.log('totalItems', totalItems)
 
       const baseLink = getBaseLink(req)
       let hateoas
@@ -96,11 +102,11 @@ export class BudgetController {
         hateoas = new Hateoas([
           new HateoasLink('create budget', `${baseLink}/budgets`, 'POST'),
         ])
-        if (budgets.length > 20 || pagination) {
-          resultingPagination = { page: pagination?.page || 1, perPage: pagination?.perPage || 20, total: budgets.length, totalPages: Math.ceil(budgets.length / (pagination?.perPage || 20)) } as any
+        if (budgets.length > 10 || pagination) {
+          resultingPagination = { page: pagination?.page || 1, perPage: pagination?.perPage || 10, total: budgets.length, totalPages: Math.ceil(budgets.length / (pagination?.perPage || 10)) } as any
           // add pagination links
-          hateoas.addLink('first page', `${baseLink}/budgets?page=1&perPage=${pagination?.perPage || 20}`, 'GET')
-          hateoas.addLink('last page', `${baseLink}/budgets?page=${resultingPagination.totalPages}&perPage=${pagination?.perPage || 20}`, 'GET')
+          hateoas.addLink('first page', `${baseLink}/budgets?page=1&perPage=${pagination?.perPage || 10}`, 'GET')
+          hateoas.addLink('last page', `${baseLink}/budgets?page=${resultingPagination.totalPages}&perPage=${pagination?.perPage || 10}`, 'GET')
           if (pagination && pagination.page > 1) {
             hateoas.addLink('prev page', `${baseLink}/budgets?page=${pagination.page - 1}&perPage=${pagination.perPage}`, 'GET')
           }
@@ -118,7 +124,7 @@ export class BudgetController {
 
       const customResponse = new CustomResponse(200, 'OK', message, budgets, hateoas, resultingPagination)
       res.status(200).json(customResponse)
-
+      try {
     } catch (error) {
       const baseLink = getBaseLink(req)
       const hateoas = new Hateoas([

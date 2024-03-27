@@ -74,16 +74,24 @@ export class BudgetService {
 
     const resultAsOwner = await this.repository.getByQuery({ 'ownerUUID': userUUID }) as Result
 
+    const distinctBudgets = resultAsOwner.data
+    for (const budget of resultWithRights.data as IBudget[]) {
+      if (budget.ownerUUID !== userUUID) {
+        distinctBudgets.push(budget)
+      }
+    }
+
 
     const result = {
-      data: resultWithRights.data.concat(resultAsOwner.data),
+      data: distinctBudgets,
       pagination: {
-        totalCount: resultWithRights.data.length + resultAsOwner.data.length,
-        totalPages: Math.ceil((resultWithRights.data.length + resultAsOwner.data.length) / 20)
+        totalCount: 0,
+        totalPages: Math.ceil((resultWithRights.data.length + resultAsOwner.data.length) / 10)
       }
     } as Result
+    result.pagination.totalCount = result.data.length
 
-    // It should resoanbly be less than 20 budgets, but we should still check for pagination.
+    // It should resoanbly be less than 10 budgets, but we should still check for pagination.
     if (!result || !result.data || result.data.length === 0) {
       return []
     }
@@ -96,21 +104,7 @@ export class BudgetService {
       }
 
       // return the budgets.
-      return this.#parseBudgets(result.data)
-    }
-
-    if (result.pagination.totalPages > 1) {
-      // Get the next page.
-      for (let i = 2; i <= result.pagination.totalPages; i++) {
-        const nextPage = await this.repository.getByQuery({ 'userAccess.userUUID': userUUID }, null, { limit: 20, skip: 20 * (i - 1) }) as Result
-        result.data = result.data.concat(nextPage.data)
-      }
-    }
-
-    // At this point the length of result.data should be the same as the total number of budgets.
-    if (result.data.length !== result.pagination.totalCount) {
-      const errorMessage = 'Failed to get all budgets.'
-      throw new ExtendedError(errorMessage, 500, new Error(errorMessage), 'BudgetService.getBudgets')
+      return this.#parseBudgets(result.data).slice(options.skip, Math.min((options.skip + options.limit), result.data.length))
     }
 
     return this.#parseBudgets(result.data)
