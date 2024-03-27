@@ -1,0 +1,88 @@
+paths:
+  /users:
+    delete:
+      summary: Unregister user
+      tags:
+        - users
+      description: Unregisters the user from the system. Requires an authentication token.
+      operationId: unregisterUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User unregistered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: "User unregistered successfully"
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HateoasLink'
+        '400':
+          description: Invalid user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error occurred during unregistration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    HateoasLink:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        method:
+          type: string
+      example:
+        rel: "register"
+        href: "http://localhost:8080/api/v1/users/register"
+        method: "POST"
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        status:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+          example: {}
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateoasLink'
