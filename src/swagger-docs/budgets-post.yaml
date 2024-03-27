@@ -1,0 +1,174 @@
+paths:
+  /budgets:
+    post:
+      summary: Create a budget
+      tags:
+        - budgets
+      description: Creates a new budget for the authenticated user.
+      operationId: createBudget
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Budget'
+      responses:
+        '201':
+          description: Budget created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomResponse201'
+        '400':
+          description: Bad Request - Invalid budget data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomResponse400'
+        '401':
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/401ErrorResponse'
+        '403':
+          description: Forbidden - You are not allowed to create a budget for another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomResponse403'
+        '500':
+          description: Internal server error or unknown error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomResponse500'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Budget:
+      type: object
+      required:
+        - budgetName
+        - budgetDescription
+        - budgetIteration
+        - budgetStartDate
+        - ownerUUID
+      properties:
+        budgetName:
+          type: string
+          example: 'Monthly spendings'
+          maxLength: 128
+        budgetDescription:
+          type: string
+          example: 'my personal budget'
+          maxLength: 256
+        budgetIteration:
+          type: string
+          example: 'monthly'
+          enum:
+            - daily
+            - weekly
+            - monthly
+            - yearly
+        budgetStartDate:
+          type: string
+          example: '2024-03-28'
+          format: date
+          required: true
+        ownerUUID:
+          type: string
+          example: '123e4567-e89b-12d3-a456-426614174000'
+          format: uuid
+          required: true
+    CustomResponse201:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 201
+        status:
+          type: string
+          example: 'Created'
+        message:
+          type: string
+          example: 'Budget created successfully'
+        data:
+          $ref: '#/components/schemas/Budget'
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Budget201HateoasLink'
+        pagination:
+          type: object
+          example: {}
+    CustomResponse400:
+      allOf:
+        - $ref: '#/components/schemas/CustomResponse'
+        - properties:
+            message:
+              type: string
+              example: 'Validation failed'
+    CustomResponse403:
+      allOf:
+        - $ref: '#/components/schemas/CustomResponse'
+        - properties:
+            message:
+              type: string
+              example: 'You are not allowed to create a budget for another user'
+    CustomResponse500:
+      allOf:
+        - $ref: '#/components/schemas/CustomResponse'
+        - properties:
+            message:
+              type: string
+              example: 'Internal Server Error'
+    CustomResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        status:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Budget201HateoasLink'
+    Budget201HateoasLink:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        method:
+          type: string
+      example:
+        - rel: 'get budgets'
+          href: 'http://localhost:8080/api/v1/budgets'
+          method: 'GET'
+        - rel: 'view budget'
+          href: 'http://localhost:8080/api/v1/budgets/{budgetId}'
+          method: 'GET'
+        - rel: 'update budget'
+          href: 'http://localhost:8080/api/v1/budgets/{budgetId}'
+          method: 'PUT'
+        - rel: 'delete budget'
+          href: 'http://localhost:8080/api/v1/budgets/{budgetId}'
+          method: 'DELETE'
+        - rel: 'logout'
+          href: 'http://localhost:8080/api/v1/users/logout'
+          method: 'POST'
+        - rel: 'unregister'
+          href: 'http://localhost:8080/api/v1/users'
+          method: 'DELETE'
