@@ -44,12 +44,111 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/401ErrorResponse'
+        '403':
+          description: Forbidden - user does not have permission to access the budget
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 403
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "User does not have permission to access the budget"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "create budget"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "POST"
+                      - rel: "get budgets"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+        '404':
+          description: Budget not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "Budget not found"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "create budget"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "POST"
+                      - rel: "get budgets"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
         '500':
           description: Internal server error or unknown error occurred
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetBugdgetByIdErrorResponse'
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 500
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "Internal server error"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "create budget"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "POST"
+                      - rel: "get budgets"
+                        href: "http://localhost:8080/api/v1/budgets"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
 components:
   securitySchemes:
     bearerAuth:
