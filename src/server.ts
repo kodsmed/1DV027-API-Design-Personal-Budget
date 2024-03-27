@@ -12,8 +12,7 @@ import httpContext from 'express-http-context';
 // Node built-in modules.
 import { randomUUID } from 'node:crypto'
 import http, { Server } from 'node:http'
-import { dirname, join } from 'path'
-import { fileURLToPath } from 'url'
+
 
 // Package modules.
 import helmet from 'helmet';
@@ -22,6 +21,7 @@ import express, { NextFunction, Request, Response, response } from 'express';
 import session from 'express-session';
 import 'dotenv/config'
 import { morganLogger } from './config/morgan.js';
+import swaggerUi from 'swagger-ui-express'
 
 // Application modules.
 import { container, TYPES } from './config/inversify.config.js'
@@ -35,6 +35,7 @@ import { AuthenticationController } from './controller/AuthenticationController.
 import { sessionOptions } from './config/sessionOptions.js';
 import { serverOptions } from './config/serverOptions.js';
 import { connectToDatabase } from './config/mongoose.js';
+import { generateSwaggerSpecs } from './config/swaggerSpecs.js';
 
 // Import middleware.
 import { removeExpiredSessions } from './middleware/removeExpiredSessions.js';
@@ -50,8 +51,8 @@ try {
   // Setup the IoC container that keeps track of the active sessions.
   // new IoC container is created in the inversify.config.js file, if needed.
   if (!app.get('IoC')) {
-  const IoC = container
-  app.set('IoC', IoC)
+    const IoC = container
+    app.set('IoC', IoC)
   }
 
   // Set various HTTP headers to make the application little more secure (https://www.npmjs.com/package/helmet).
@@ -138,8 +139,12 @@ try {
     next()
   })
 
-  // TODO: Serve the documentation..
-  // app.use(express.static(serverOptions.publicPath))
+  // Middleware to serve the Swagger UI.
+  app.use('/api-docs', swaggerUi.serve, (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const swaggerSpec = generateSwaggerSpecs(req);
+    swaggerUi.setup(swaggerSpec)(req, res, next);
+  });
+
 
   // Apply custom middleware.
   app.use((req, res, next) => removeExpiredSessions(req, res, next))
@@ -151,17 +156,23 @@ try {
    * All routes except /login and /register will require authentication.
    */
   app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-      try{
-        if ((req.path === '/api/v1/users/login' && req.method === 'POST') || (req.path === '/api/v1/users' && req.method === 'POST')) {
-          next()
-        } else {
-          const authenticationController = container.get<AuthenticationController>(TYPES.AuthenticationController)
-          await authenticationController.authenticate(req, res, next)
-        }
-      } catch (error:any) {
-        res.status(401).json({ error: 'Token not valid' })
+    try {
+      if (
+        (req.path === '/api/v1/users/login' && req.method === 'POST')
+        || (req.path === '/api/v1/users' && req.method === 'POST')
+        || (req.path === '/api/v1' && req.method === 'GET')
+        || (req.path === '/' && req.method === 'GET')
+        || (req.path.includes('/api-docs') && req.method === 'GET')
+      ) {
+        next()
+      } else {
+        const authenticationController = container.get<AuthenticationController>(TYPES.AuthenticationController)
+        await authenticationController.authenticate(req, res, next)
       }
-    })
+    } catch (error: any) {
+      res.status(401).json({ error: 'Token not valid' })
+    }
+  })
 
   // Register routes.
   const mainRouter = createMainRouter()
