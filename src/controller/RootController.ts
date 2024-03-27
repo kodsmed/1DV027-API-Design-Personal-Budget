@@ -27,7 +27,9 @@ export class RootController {
    * Returns the API documentation.
    */
   async returnApiDocumentation(req: express.Request, res: express.Response, next: express.NextFunction) {
-    const documentationURI = 'https://virtserver.swaggerhub.com/JK224JV/Personal-Budget/1.0.0'
+    const protocol = req.protocol
+    const host = req.get('host')
+    const documentationURI = `${protocol}://${host}/api-docs`
     const baseLink = getBaseLink(req) // host:port/api/api-version
     const hateoasLinks = new Hateoas(
       [
