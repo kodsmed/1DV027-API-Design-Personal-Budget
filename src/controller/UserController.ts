@@ -212,8 +212,6 @@ export class UserController {
       const hateoas = new Hateoas([
         new HateoasLink('login', `${baseLink}/users/login`, 'POST'),
         new HateoasLink('register', `${baseLink}/users/register`, 'POST'),
-        new HateoasLink('update', `${baseLink}/users`, 'PUT'),
-        new HateoasLink('unregister', `${baseLink}/users`, 'DELETE')
       ])
       let message = 'User login failed'
       let code = 500
