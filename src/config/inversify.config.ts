@@ -150,12 +150,14 @@ decorate(inject(TYPES.JWTServices), AuthenticationController, 0)
 decorate(inject(TYPES.BudgetService), BudgetController, 0)
 decorate(inject(TYPES.CategoryService), CategoryController, 0)
 decorate(inject(TYPES.BudgetService), CategoryController, 1)
+decorate(inject(TYPES.WebhookService), WebhookController, 0)
 decorate(inject(TYPES.ExpenseService), ExpenseController, 0)
 decorate(inject(TYPES.BudgetService), ExpenseController, 1)
+decorate(inject(TYPES.WebhookController), ExpenseController, 2)
 decorate(inject(TYPES.UserService), UserController, 0)
 decorate(inject(TYPES.AuthService), UserController, 1)
 decorate(inject(TYPES.UserController), RootController, 0)
-decorate(inject(TYPES.WebhookService), WebhookController, 0)
+
 
 // Create the IoC container.
 export const container = new Container()
