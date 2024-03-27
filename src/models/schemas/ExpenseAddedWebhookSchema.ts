@@ -4,14 +4,26 @@
 
 import mongoose from 'mongoose'
 
+export interface IAddedExpenseWebhook extends mongoose.Document {
+  ownerUUID: string
+  url: string
+  secret: string
+  budgetIDtoMonitor: string
+  categoryToMonitor: number
+}
+
 // Create a schema.
 
 const schema = new mongoose.Schema({
+  ownerUUID: {
+    type: String,
+    required: [true, 'Owner UUID is required.'],
+    length: [36, 'Owner UUID must be 36 characters long.']
+  },
   url: {
     type: String,
     required: [true, 'URL is required.'],
     unique: true,
-    match: [/^https?:\/\/.+\..+/, 'Please provide a valid URL.']
   },
   secret: {
     type: String,
@@ -25,8 +37,8 @@ const schema = new mongoose.Schema({
   },
   categoryToMonitor: {
     type: Number,
-    required: [true, 'Limit is required.'],
-    minimum: [0, 'Limit must be greater than or equal to 0.']
+    required: [true, 'Category to monitor is required.'],
+    minimum: [0, 'Category must be greater than or equal to 0.']
   }
 }, {
   timestamps: true,
@@ -50,4 +62,4 @@ schema.virtual('id').get(function () {
 })
 
 // Create a model using the schema.
-export const LimitWebhook = mongoose.model('LimitWebhook', schema)
+export const ExpenseAddedWebhookModel = mongoose.model('ExpenseAddedWebhookModel', schema)

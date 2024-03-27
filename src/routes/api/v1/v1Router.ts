@@ -8,7 +8,8 @@ import { Hateoas, HateoasLink } from '../../../models/Hateoas.js'
 
 export function createV1Router(
   userRouter: express.Router,
-  budgetRouter: express.Router
+  budgetRouter: express.Router,
+  webhookRouter: express.Router
 ) {
   /**
    * The version one router.
@@ -35,6 +36,11 @@ export function createV1Router(
    * The budget router.
    */
   router.use('/budgets', budgetRouter)
+
+  /**
+   * The webhook router.
+   */
+  router.use('/webhooks', webhookRouter)
 
   return router
 }
