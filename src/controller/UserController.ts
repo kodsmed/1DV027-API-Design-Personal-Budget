@@ -29,7 +29,9 @@ export class UserController {
   }
 
   /**
-   * Regiseter
+   * Register a user to the system.
+   *
+   * @see /swagger-docs/user-post.yml
    */
   public async registerUser(req: express.Request, res: express.Response, next: NextFunction) {
     try {
@@ -83,6 +85,8 @@ export class UserController {
 
   /**
    * Unregister a user from the system.
+   *
+   * @see /swagger-docs/user-delete.yml
    */
   public async unregisterUser(req: express.Request, res: express.Response, next: NextFunction) {
     try {
@@ -127,6 +131,8 @@ export class UserController {
 
   /**
    * Change user details.
+   *
+   * @see /swagger-docs/user-put.yml
    */
   public async changeDetails(req: express.Request, res: express.Response, next: NextFunction) {
     try {
@@ -139,14 +145,17 @@ export class UserController {
     const baseLink = getBaseLink(req) // host:port/api/api-version
     const hateoas = new Hateoas([
       new HateoasLink('update', `${baseLink}/users`, 'PUT'),
-      new HateoasLink('delete', `${baseLink}/users`, 'DELETE')
+      new HateoasLink('delete', `${baseLink}/users`, 'DELETE'),
+      new HateoasLink('logout', `${baseLink}/users/logout`, 'GET'),
+      new HateoasLink('get Budgets', `${baseLink}/budgets`, 'GET'),
     ])
     const responseObject = new CustomResponse(statusCode, status, message, data, hateoas, {})
     res.status(200).json(responseObject)
     } catch (error) {
       const baseLink = getBaseLink(req) // host:port/api/api-version
       const hateoas = new Hateoas([
-        new HateoasLink('register', `${baseLink}/users/register`, 'POST')
+        new HateoasLink('register', `${baseLink}/users/register`, 'POST'),
+        new HateoasLink('login', `${baseLink}/users/login`, 'POST'),
       ])
       let message = 'User details update failed'
       let code = 500
@@ -179,6 +188,8 @@ export class UserController {
 
   /**
    * Login. Check if the user exists and if the password is correct, then generate a token and return the user data and tokens.
+   *
+   * @see /swagger-docs/users-login-post.yaml
    */
   public async login(req: express.Request, res: express.Response, next: NextFunction) {
     const baseLink = getBaseLink(req) // host:port/api/api-version
@@ -245,6 +256,8 @@ export class UserController {
    *
    * WARNING: The access token is not stored in the database, so it is not removed.
    * Consequently, the access token will still be valid until it expires... This is how JWTs are designed to work.
+   *
+   * @see /swagger-docs/users-logout-get.yaml
    */
   public async logout(req: express.Request, res: express.Response, next: NextFunction) {
     try {
