@@ -1,0 +1,91 @@
+paths:
+  /api/v1/users/logout:
+    post:
+      summary: User logout
+      tags:
+        - authentication
+      description: Logs out the user by removing the refresh token from the database. Access tokens are not removed and will remain valid until expiration.
+      operationId: logoutUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: "User logged out successfully"
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HateoasLink'
+        '400':
+          description: Invalid user data - could potentially happen if the user has been removed but the access token is still valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/401ErrorResponse'
+        '500':
+          description: Internal server error occurred during logout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    HateoasLink:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        method:
+          type: string
+      example:
+        - rel: "login"
+          href: "http://localhost:8080/api/v1/users/login"
+          method: "POST"
+        - rel: "register"
+          href: "http://localhost:8080/api/v1/users/register"
+          method: "POST"
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        status:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+          example: {}
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateoasLink'
+security:
+  - bearerAuth: []
