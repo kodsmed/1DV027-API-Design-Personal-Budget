@@ -1,0 +1,149 @@
+paths:
+    /api/v1/users:
+    post:
+      summary: Register a new user
+      tags:
+        - users
+      description: Endpoint to register a new user in the system.
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  pattern: '^[A-Za-z][A-Za-z0-9_-]{7,31}$'
+                  description: 'Alphanumeric characters, underscores, and dashes only. Must be 8 to 32 characters long and start with a letter.'
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  minLength: 12
+                  maxLength: 256
+                  description: 'Must be 12 to 256 characters long.'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad Request - Invalid user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUserResponse'
+        '409':
+          description: Conflict - User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorConflictResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUserResponse'
+components:
+  schemas:
+    UserResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 201
+        status:
+          type: string
+          example: Created
+        message:
+          type: string
+          example: User registered successfully
+        data:
+          $ref: '#/components/schemas/UserData'
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateoasLink'
+        pagination:
+          type: object
+    UserData:
+      type: object
+      properties:
+        username:
+          type: string
+          example: user_8hx4er
+        email:
+          type: string
+          example: user_8hx4er@example.com
+        password:
+          type: string
+          example: "**********"
+        uuid:
+          type: string
+          example: "d1656ffc-62c3-4eac-a7c2-7bce93c8c5ee"
+        id:
+          type: string
+          example: "66045c791edc0214458ae0e7"
+    ErrorUserResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        status:
+          type: string
+          example: Error
+        message:
+          type: string
+          example: Validation failed.
+        data:
+          type: object
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateoasLink'
+        pagination:
+          type: object
+    HateoasLink:
+      type: object
+      required:
+        - rel
+        - href
+        - method
+      properties:
+        rel:
+          type: string
+          example: login
+        href:
+          type: string
+          example: http://localhost:8080/api/v1/users/login
+        method:
+          type: string
+          example: POST
+    ErrorConflictResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 409
+        status:
+          type: string
+          example: Error
+        message:
+          type: string
+          example: User already exists
+        data:
+          type: object
+        Links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateoasLink'
+        pagination:
+          type: object
