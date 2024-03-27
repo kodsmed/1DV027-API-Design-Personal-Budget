@@ -37,7 +37,8 @@ export class BudgetService {
    * Adds a budget to the
    */
   async addBudget(budget: Budget): Promise<Budget> {
-    const sanitizedBudget = new Budget(budget.budgetName, budget.budgetDescription, budget.budgetStartDate, budget.budgetIteration, budget.ownerUUID, budget.categories || [], budget.userAccess || [])
+    const sanitizedBudget = new Budget(budget.budgetName, budget.budgetDescription, budget.budgetStartDate, budget.budgetIteration, budget.ownerUUID, budget.categories, budget.userAccess)
+    console.log("Sanitized budget: ", sanitizedBudget)
     const result = await this.repository.create(sanitizedBudget)
     if (result instanceof Error) {
       throw result

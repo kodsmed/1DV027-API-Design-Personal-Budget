@@ -27,6 +27,7 @@ export class BudgetController {
   async createBudget(req: express.Request, res: express.Response, next: express.NextFunction) {
     try {
       const budget = req.body as Budget
+      console.log(budget)
       if (budget.ownerUUID !== req.UUID) {
         throw new ExtendedError('You are not allowed to create a budget for another user', 403)
       }
@@ -41,10 +42,9 @@ export class BudgetController {
         new HateoasLink('logout', `${baseLink}/users/logout`, 'POST'),
         new HateoasLink('unregister', `${baseLink}/users`, 'DELETE')
       ])
-      const customResponse = new CustomResponse(201, 'Created', 'Budget created successfully', budget, hateoas,{})
+      const customResponse = new CustomResponse(201, 'Created', 'Budget created successfully', createdBudget, hateoas, {})
       res.status(201).json(customResponse)
-    }
-    catch (error) {
+    } catch (error) {
       const baseLink = getBaseLink(req)
       const hateoas = new Hateoas([
         new HateoasLink('get budgets', `${baseLink}/budgets`, 'GET'),
@@ -59,7 +59,7 @@ export class BudgetController {
         message = error.message || 'Internal Server Error'
       }
 
-      const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas,{})
+      const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas, {})
       res.status(code).json(customResponse)
     }
 
@@ -69,7 +69,7 @@ export class BudgetController {
    * Gets all budgets the user has access to.
    */
   async getBudgets(req: express.Request, res: express.Response, next: express.NextFunction) {
-    try{
+    try {
       const userUUID = req.UUID as string
       const page = req.query.page as string | undefined
       const perPage = req.query.perPage as string | undefined
@@ -85,7 +85,7 @@ export class BudgetController {
       let hateoas
       let message = ''
       let resultingPagination = {} as any
-      if(budgets.length === 0) {
+      if (budgets.length === 0) {
         hateoas = new Hateoas([
           new HateoasLink('create budget', `${baseLink}/budgets`, 'POST'),
           new HateoasLink('logout', `${baseLink}/users/logout`, 'POST'),
@@ -97,7 +97,7 @@ export class BudgetController {
           new HateoasLink('create budget', `${baseLink}/budgets`, 'POST'),
         ])
         if (budgets.length > 20 || pagination) {
-          resultingPagination = { page: pagination?.page || 1, perPage: pagination?.perPage || 20, total: budgets.length, totalPages: Math.ceil(budgets.length / (pagination?.perPage || 20))} as any
+          resultingPagination = { page: pagination?.page || 1, perPage: pagination?.perPage || 20, total: budgets.length, totalPages: Math.ceil(budgets.length / (pagination?.perPage || 20)) } as any
           // add pagination links
           hateoas.addLink('first page', `${baseLink}/budgets?page=1&perPage=${pagination?.perPage || 20}`, 'GET')
           hateoas.addLink('last page', `${baseLink}/budgets?page=${resultingPagination.totalPages}&perPage=${pagination?.perPage || 20}`, 'GET')
@@ -252,7 +252,7 @@ export class BudgetController {
         new HateoasLink('unregister', `${baseLink}/users`, 'DELETE')
       ])
 
-      const customResponse = new CustomResponse(200, 'OK', 'Budget deleted successfully', {}, hateoas,{})
+      const customResponse = new CustomResponse(200, 'OK', 'Budget deleted successfully', {}, hateoas, {})
       res.status(200).json(customResponse)
     } catch (error) {
       const baseLink = getBaseLink(req)
@@ -270,7 +270,7 @@ export class BudgetController {
         message = error.message || 'Internal Server Error'
       }
 
-      const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas,{})
+      const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas, {})
       res.status(code).json(customResponse)
     }
   }

@@ -13,7 +13,7 @@ export class Budget {
   budgetName: string = ''
   budgetDescription: string = ''
   budgetStartDate: Date = new Date()
-  budgetIteration: BudgetIterations = BudgetIterations.Monthly
+  budgetIteration: string = ''
   id: string = ''
 
   /**
@@ -102,7 +102,7 @@ export class Budget {
     }
 
     // Convert the string to the enum.
-    this.budgetIteration = BudgetIterations[budgetIteration as keyof typeof BudgetIterations]
+    this.budgetIteration = budgetIteration
   }
 
   #setOwnerUUID(ownerUUID: string) {
