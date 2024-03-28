@@ -13,7 +13,7 @@ servers:
 paths:
   /budgets:
     get:
-      summary: Get all budgets
+      summary: Get all budgets. The budgets are paginated if there are more than 10 budgets or page and perPage query parameters are provided.
       tags:
         - budgets
       description: Retrieves all budgets the user has access to. Pagination is optional.

@@ -1,7 +1,7 @@
 paths:
   /budgets/{budgetId}/categories:
     get:
-      summary: Get all categories for a budget
+      summary: Get all categories for a budget. The categories are paginated if there is more than 10 categories or page and perPage query parameters are provided.
       tags:
         - categories
       description: Retrieves all categories within a specified budget, with support for pagination.
