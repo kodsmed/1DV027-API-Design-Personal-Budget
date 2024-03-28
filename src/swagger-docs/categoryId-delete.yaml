@@ -1,0 +1,221 @@
+paths:
+  /budgets/{budgetId}/categories/{categoryId}:
+    delete:
+      summary: Delete a category in the budget
+      tags:
+        - categories
+      description: Deletes an existing category in the specified budget.
+      operationId: deleteCategory
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: budgetId
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the budget
+        - in: path
+          name: categoryId
+          required: true
+          schema:
+            type: integer
+          description: Numeric identifier of the category within the budget
+      responses:
+        '200':
+          description: Category deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: "Category deleted"
+                  data:
+                    type: object
+                    properties:
+                      budgetName:
+                        type: string
+                        example: "My Monthly spendings"
+                      budgetDescription:
+                        type: string
+                        example: "my personal budget"
+                      budgetIteration:
+                        type: string
+                        example: "monthly"
+                      budgetStartDate:
+                        type: string
+                        example: "2024-03-28"
+                      categories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            categoryName:
+                              type: string
+                            categoryLimit:
+                              type: integer
+                            expenses:
+                              type: array
+                              items:
+                                type: object
+                        example:
+                          - categoryName: "CommutingCard"
+                            categoryLimit: 1200
+                            expenses: []
+                      id:
+                        type: string
+                        format: mongoId
+                      ownerUUID:
+                        type: string
+                        format: uuid
+                      userAccess:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            userUUID:
+                              type: string
+                              format: uuid
+                            accessLevel:
+                              type: string
+                              enum:
+                                - owner
+                                - read
+                                - write
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to the budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+        '401':
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/401ErrorResponse'
+        '403':
+          description: Forbidden - user does not have permission to delete the category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 403
+                  status:
+                    type: string
+                    example: "Forbidden"
+                  message:
+                    type: string
+                    example: "User does not have permission to the budget"
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to the budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: "Not Found"
+                  message:
+                    type: string
+                    example: "Category not found"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to the budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 500
+                  status:
+                    type: string
+                    example: "Internal Server Error"
+                  message:
+                    type: string
+                    example: "Internal server error"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "create category"
+                      - href: "/budgets/{budgetId}/categories"
+                      - method: "POST"
