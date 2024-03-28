@@ -1,0 +1,214 @@
+paths:
+  /budgets/{budgetId}/categories:
+    get:
+      summary: Get all categories for a budget
+      tags:
+        - categories
+      description: Retrieves all categories within a specified budget, with support for pagination.
+      operationId: getCategories
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: budgetId
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the budget.
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number for pagination.
+          required: false
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+          description: The number of items per page for pagination.
+          required: false
+      responses:
+        '200':
+          description: A list of categories within the budget retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: "Categories retrieved"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        categoryName:
+                          type: string
+                        categoryLimit:
+                          type: integer
+                        expenses:
+                          type: array
+                          items:
+                            type: object
+                    example:
+                      - categoryName: "Utilities"
+                        categoryLimit: 2000
+                        expenses: []
+                  Links:
+                    type: array
+                    example:
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "get categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "view category 0: Utilities"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories/0"
+                        method: "GET"
+                      - rel: "update category 0: Utilities"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories/0"
+                        method: "PUT"
+                      - rel: "delete category 0: Utilities"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories/0"
+                        method: "DELETE"
+                      - rel: "view budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      perPage:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+                    example:
+                      page: 1
+                      perPage: 10
+                      total: 20
+                      totalPages: 2
+        '401':
+          description: No, invalid, or expired token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/401ErrorResponse'
+        '403':
+          description: Forbidden - user does not have permission to the budget
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 403
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "User does not have permission to the budget"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 500
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "Internal server error"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        status:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+        Links:
+          type: array
+          items:
+            type: object
+            properties:
+              rel:
+                type: string
+              href:
+                type: string
+              method:
+                type: string
