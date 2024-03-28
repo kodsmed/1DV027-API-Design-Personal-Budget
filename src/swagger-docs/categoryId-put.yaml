@@ -53,6 +53,19 @@ paths:
                     example: "Category updated"
                   data:
                     type: object
+                    properties:
+                      categoryId:
+                        type: integer
+                        example: 1
+                      categoryName:
+                        type: string
+                        example: "CommutingCard"
+                      categoryLimit:
+                        type: number
+                        example: 1200
+                      budgetId:
+                        type: string
+                        example: "1"
                   Links:
                     type: array
                     items:
