@@ -124,6 +124,7 @@ export class CategoryController {
 
       hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
+      hateoas.addLink('unregister', `${baseLink}/users`, 'DELETE')
       const customResponse = new CustomResponse(200, 'OK', 'Categories retrieved', paginatedCategories, hateoas, resultingPagination)
       res.status(200).json(customResponse)
     } catch (error) {
@@ -139,6 +140,7 @@ export class CategoryController {
       hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
       hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
+      hateoas.addLink('unregister', `${baseLink}/users`, 'DELETE')
       const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas, {})
       res.status(code).json(customResponse)
     }
