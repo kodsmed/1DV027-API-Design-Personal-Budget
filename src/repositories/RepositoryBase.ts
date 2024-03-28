@@ -138,13 +138,13 @@ export class RepositoryBase {
   async getById(id: string, projection = null, options = null): Promise<mongoose.Document> {
     try {
       const model = this.model as mongoose.Model<mongoose.Document>
-      const doc = await model.find({'id': id}, projection, options).exec()
+      const doc = await model.findOne({'_id': id}, projection, options).exec()
 
       if (!doc) {
         throw new mongoose.Error.DocumentNotFoundError("Document not found.")
       }
 
-      return doc[0]
+      return doc
     } catch (error) {
       let errorToPass
       let code = 500
