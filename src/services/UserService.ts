@@ -55,13 +55,13 @@ export class UserService {
     }
     // does the user exist?
     try {
-      console.log (uuid)
+      console.log(uuid)
       const existingUser = await this.repository.getOneByQuery({ userID: uuid })
       console.log(existingUser)
-    if (!existingUser) {
-      throw new ExtendedError('User does not exist.', 404, new Error('User does not exist.'), 'UserService.removeUser')
-    }
-    this.repository.deleteByDocument(existingUser)
+      if (!existingUser) {
+        throw new ExtendedError('User does not exist.', 404, new Error('User does not exist.'), 'UserService.removeUser')
+      }
+      this.repository.deleteByDocument(existingUser)
     } catch (error: any) {
       throw new ExtendedError('User does not exist.', 404, new Error('User does not exist.'), 'UserService.removeUser')
     }
@@ -86,7 +86,7 @@ export class UserService {
   async updateUser(user: UserData): Promise<UserData> {
     let userDocument: IUser | null = null
     try {
-      userDocument = await this.repository.getOneByQuery({uuid: user.uuid}) as IUser
+      userDocument = await this.repository.getOneByQuery({ userID: user.uuid }) as IUser
     }
     catch (error: any) {
       throw new ExtendedError('User does not exist.', 404, new Error('User does not exist.'), 'UserService.updateUser')
@@ -94,9 +94,6 @@ export class UserService {
 
     if (!userDocument) {
       throw new ExtendedError('User does not exist.', 404, new Error('User does not exist.'), 'UserService.updateUser')
-    }
-    if (userDocument.userID !== user.uuid) {
-      throw new ExtendedError('Invalid user.', 401, new Error('Invalid user.'), 'UserService.updateUser')
     }
     if (!user.username && !user.email && !user.password) {
       throw new ExtendedError('No changes to user.', 400, new Error('No changes to user.'), 'UserService.updateUser')
@@ -116,29 +113,30 @@ export class UserService {
       }
     }
 
+    let otherUser: IUser | null = null
     try {
-      const otherUser = await this.repository.getOneByQuery({email: user.email}) as IUser
-      if (otherUser && otherUser.userID !== user.uuid) {
-        throw new ExtendedError('Email already in use.', 409, new Error('Email already in use.'), 'UserService.updateUser')
-      }
+      otherUser = await this.repository.getOneByQuery({ email: user.email }) as IUser
     }
     catch (error: any) {
-      if (error instanceof ExtendedError && error.status !== 404) {
-        throw error
-      }
+    }
+    // no user found, so we can continue
+
+
+    if (otherUser && otherUser.userID !== user.uuid) {
+      throw new ExtendedError('Email already in use.', 400, new Error('Email already in use.'), 'UserService.updateUser')
     }
 
-    if(user.email.length > 256) {
+    if (user.email.length > 256) {
       throw new ExtendedError('Email too long.', 400, new Error('Email too long.'), 'UserService.updateUser')
     }
-    if(user.password && user.password.length > 256) {
+    if (user.password && user.password.length > 256) {
       throw new ExtendedError('Password too long.', 400, new Error('Password too long.'), 'UserService.updateUser')
     }
     userDocument.username = user.username || userDocument.username
     userDocument.email = user.email || userDocument.email
     userDocument.password = user.password ? await this.hashPassword(user.password) : userDocument.password
     const validateBeforeSave = false // Needed to avoid issues with the unique constraint on the email field.
-    try{
+    try {
       const updatedUser = await this.repository.save(userDocument, validateBeforeSave) as IUser
       return this.generateUserDataObject(updatedUser)
     } catch (error: any) {
