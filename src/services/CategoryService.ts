@@ -5,13 +5,11 @@
  * @module CategoryService
  */
 
-import { BudgetRepository } from "../repositories/BudgetRepository.js"
 import { Budget } from "../models/Budget.js"
 import { Category } from "../models/Category.js"
 import { ExtendedError } from "../lib/types/ExtendedError.js"
 import { Pagination } from "../repositories/RepositoryBase.js"
 import { checkUserAccess } from "../util/validator.js"
-import { IBudget } from "../models/schemas/BudgetSchema.js"
 
 
 /**
