@@ -1,0 +1,74 @@
+paths:
+  /budgets/{budgetId}/categories/{categoryId}:
+    get:
+      tags:
+        - Category
+      summary: Get a category by ID
+      operationId: getCategoryById
+      parameters:
+        - name: budgetId
+          in: path
+          required: true
+          description: Unique identifier for the budget
+          schema:
+            type: string
+        - name: categoryId
+          in: path
+          required: true
+          description: Unique identifier for the category within the budget
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Category retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Category retrieved
+                  data:
+                    type: object
+                    properties:
+                      categoryName:
+                        type: string
+                        example: CommutingCard
+                      categoryLimit:
+                        type: integer
+                        example: 1200
+                      expenses:
+                        type: array
+                        items: {}
+                  links:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rel:
+                          type: string
+                        href:
+                          type: string
+                        method:
+                          type: string
+                  pagination:
+                    type: object
+        '401':
+          description: Category not found
+        '500':
+          description: Internal server error
+      security:
+        - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
