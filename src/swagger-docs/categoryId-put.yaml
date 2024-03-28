@@ -111,6 +111,88 @@ paths:
                       - rel: "unregister"
                         href: "http://localhost:8080/api/v1/users"
                         method: "DELETE"
+        '401':
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/401ErrorResponse'
+        '403':
+          description: Forbidden - user does not have permission to update the category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "User does not have permission to the budget"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to the budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "Category not found"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to the budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
         '500':
           description: Internal server error occurred
           content:
