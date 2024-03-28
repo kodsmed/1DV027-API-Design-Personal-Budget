@@ -1,5 +1,5 @@
 paths:
-  /budgets/:budgetId/categories/:categoryId/expenses:
+  /budgets/{budgetId}/categories/{categoryId}/expenses:
     get:
       tags:
         - expenses
