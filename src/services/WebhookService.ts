@@ -113,7 +113,7 @@ export class WebhookService {
       })
 
     } catch (error) {
-      throw new Error('Failed to trigger webhook.')
+      // do nothing
     }
   }
 }

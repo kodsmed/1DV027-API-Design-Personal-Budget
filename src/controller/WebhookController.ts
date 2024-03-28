@@ -76,6 +76,7 @@ export class WebhookController {
       this.webhookService.triggerWebhookIfApplicable(uuid, expense, budgetId, categoryId)
 
     } catch (error) {
+      // do nothing
     }
   }
 }
