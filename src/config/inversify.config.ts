@@ -143,7 +143,7 @@ decorate(inject(TYPES.UserRepository), UserService, 0)
 decorate(inject(TYPES.UserService), AuthService, 0)
 decorate(inject(TYPES.JWTServices), AuthService, 1)
 decorate(inject(TYPES.TokenRepository), AuthService, 2)
-decorate(inject(TYPES.ExpenseAddedWebhookModel), WebhookService, 0)
+decorate(inject(TYPES.ExpenseAddedWebhookRepository), WebhookService, 0)
 
 // Inject services into controllers.
 decorate(inject(TYPES.JWTServices), AuthenticationController, 0)
