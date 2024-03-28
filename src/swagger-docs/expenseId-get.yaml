@@ -1,0 +1,240 @@
+paths:
+  /budgets/{budgetId}/categories/{categoryId}/expenses/{expenseId}:
+    get:
+      tags:
+        - expenses
+      summary: Get an expense by ID
+      operationId: getExpenseById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: budgetId
+          in: path
+          required: true
+          description: Unique identifier for the budget
+          schema:
+            type: string
+        - name: categoryId
+          in: path
+          required: true
+          description: Unique identifier for the category within the budget
+          schema:
+            type: integer
+        - name: expenseId
+          in: path
+          required: true
+          description: Unique identifier for the expense within the category
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Expense retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Expense retrieved successfully
+                  data:
+                    type: object
+                    example:
+                      {
+                        "ownerUUID": "4d5139fe-b06b-4b85-937f-b865abe87298",
+                        "date": "2024-03-28T11:56:35.501Z",
+                        "amount": 4100,
+                        "note": "rent",
+                      }
+                  Links:
+                    type: array
+                    example:
+                      [
+                        {
+                          "rel": "all expenses",
+                          "href": "http://localhost:8080/api/v1/budget/66055ad9d6f47113ae534189/category/0/expenses",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "update",
+                          "href": "http://localhost:8080/api/v1/budgets/66055ad9d6f47113ae534189/categories/0/expenses/0",
+                          "method": "PUT",
+                        },
+                        {
+                          "rel": "delete",
+                          "href": "http://localhost:8080/api/v1/budgets/66055ad9d6f47113ae534189/categories/0/expenses/0",
+                          "method": "DELETE",
+                        },
+                        {
+                          "rel": "back to category",
+                          "href": "http://localhost:8080/api/v1/budget/66055ad9d6f47113ae534189/category/0",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "logout",
+                          "href": "http://localhost:8080/api/v1/users/logout",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "unregister",
+                          "href": "http://localhost:8080/api/v1/users",
+                          "method": "DELETE",
+                        },
+                      ]
+                  pagination:
+                    type: object
+                    example: {}
+        '401':
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/401ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 403
+                  status:
+                    type: string
+                    example: Error
+                  message:
+                    type: string
+                    example: User does not have access to the budget
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    example:
+                      [
+                        {
+                          "rel": "all expenses",
+                          "href": "http://localhost:8080/api/v1/budget/66055ad9d6f47113ae534189/category/0/expenses",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "back to category",
+                          "href": "http://localhost:8080/api/v1/budget/66055ad9d6f47113ae534189/category/0",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "logout",
+                          "href": "http://localhost:8080/api/v1/users/logout",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "unregister",
+                          "href": "http://localhost:8080/api/v1/users",
+                          "method": "DELETE",
+                        },
+                      ]
+                  pagination:
+                    type: object
+                    example: {}
+        "404":
+          description: Expense not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: Error
+                  message:
+                    type: string
+                    example: Expense not found
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    example:
+                      [
+                        {
+                          "rel": "all expenses",
+                          "href": "http://localhost:8080/api/v1/budget/66055ad9d6f47113ae534189/category/0/expenses",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "back to category",
+                          "href": "http://localhost:8080/api/v1/budget/66055ad9d6f47113ae534189/category/0",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "logout",
+                          "href": "http://localhost:8080/api/v1/users/logout",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "unregister",
+                          "href": "http://localhost:8080/api/v1/users",
+                          "method": "DELETE",
+                        },
+                      ]
+                  pagination:
+                    type: object
+                    example: {}
+        "500":
+          description: Expense not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 500
+                  status:
+                    type: string
+                    example: Not Found
+                  message:
+                    type: string
+                    example: Internal Server Error
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    example:
+                      [
+                        {
+                          "rel": "all expenses",
+                          "href": "http://localhost:8080/api/v1/budget/66055ad9d6f47113ae534189/category/0/expenses",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "back to category",
+                          "href": "http://localhost:8080/api/v1/budget/66055ad9d6f47113ae534189/category/0",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "logout",
+                          "href": "http://localhost:8080/api/v1/users/logout",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "unregister",
+                          "href": "http://localhost:8080/api/v1/users",
+                          "method": "DELETE",
+                        },
+                      ]
+                  pagination:
+                    type: object
+                    example: {}
+
