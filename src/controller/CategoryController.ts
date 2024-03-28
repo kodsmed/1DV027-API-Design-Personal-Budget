@@ -48,10 +48,11 @@ export class CategoryController {
 
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('back to budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
+      hateoas.addLink('unregister', `${baseLink}/users`, 'DELETE')
       const customResponse = new CustomResponse(201, 'Created', 'Category added to budget', changedBudget, hateoas,{})
       res.status(201).json(customResponse)
     } catch (error) {
@@ -63,10 +64,11 @@ export class CategoryController {
       }
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('back to budget budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
+      hateoas.addLink('unregister', `${baseLink}/users`, 'DELETE')
       const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas,{})
       res.status(code).json(customResponse)
     }
