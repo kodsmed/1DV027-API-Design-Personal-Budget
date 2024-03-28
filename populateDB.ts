@@ -20,7 +20,12 @@ async function populateDB() {
   const hashedPassword = await passwordHasher('TestTestTest');
   const user = new User({username: 'TesterNo1', email: 'tester@test.com', userID: fakeUUID, password: hashedPassword})
 
-  await user.save();
+  console.log('saving user');
+  try {
+    await user.save();
+  } catch (error) {
+    console.log(error);
+  }
 
   const budget = new BudgetObject('Test budget', 'for testing purposes', new Date(), 'yearly', fakeUUID, [])
   const rent = new Category('Rent', 50000)
@@ -35,49 +40,62 @@ async function populateDB() {
 
   // populate categories with expenses
   // Rent
+  console.log('populating categories with expenses');
+  console.log('rent');
   for (let i = 0; i < 12; i++) {
     const expense = new Expense(fakeUUID, new Date(2024, i, 1), 10000, 'Rent payment')
     rent.expenses.push(expense)
   }
 
   // Groceries once a week
+  console.log('groceries');
   for (let i = 0; i < 52; i++) {
     const expense = new Expense(fakeUUID, new Date(2024, 0, 1 + i*7), 400, 'Groceries')
     groceries.expenses.push(expense)
   }
 
   // Transportation
+  console.log('transportation');
   for (let i = 0; i < 12; i++) {
     const expense = new Expense(fakeUUID, new Date(2024, i, 1), 2000, 'Transportation')
     transportation.expenses.push(expense)
   }
 
   // Utilities
+  console.log('utilities');
   for (let i = 0; i < 12; i++) {
     const expense = new Expense(fakeUUID, new Date(2024, i, 1), 1000, 'Utilities')
     utilities.expenses.push(expense)
   }
 
   // Entertainment
+  console.log('entertainment');
   for (let i = 0; i < 12; i++) {
     const expense = new Expense(fakeUUID, new Date(2024, i, 1), 2000, 'Entertainment')
     entertainment.expenses.push(expense)
   }
 
   // Savings
+  console.log('savings');
   for (let i = 0; i < 12; i++) {
     const expense = new Expense(fakeUUID, new Date(2024, i, 1), 2000, 'Savings')
     savings.expenses.push(expense)
   }
 
   // Other
+  console.log('other');
   for (let i = 0; i < 12; i++) {
     const expense = new Expense(fakeUUID, new Date(2024, i, 1), 1000, 'Other')
     other.expenses.push(expense)
   }
 
   const budgetDoc = new Budget(budget)
-  await budgetDoc.save();
+  console.log('saving budget');
+  try{
+    await budgetDoc.save();
+  } catch (error) {
+    console.log(error);
+  }
 
 }
 
