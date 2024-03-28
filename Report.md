@@ -96,12 +96,9 @@ The JWT token is also a potential security risk, as it needs to be stored somewh
 
 ### 4. Explain how your webhook works
 
-There is two webhooks in the API, both trigger when an expense is created or updated, one of them monitors any expense added to a caterory, and the other monitors if the total amount of expenses in a budget exceeds a predefined limit.  
-When an expense is created or updated, the webhook will check if the conditions are met, and if they are, it will send a POST request to the URL specified in the webhook with the expense or budget as the payload and a user predefined secret key in the header.  
+When an expense is created or updated, the webhook will check if the conditions are met, and if they are, it will send a POST request to the URL specified in the webhook with the expense.
 The webhook is designed to be stateless and will not store any data, it will only send a POST request to the URL specified in the webhook and then forget about it.
 
-As a security measure, I will not allow the user to register a webhook with a URL that is not on the same as the request was made from.  
-That way the user can not sign up a webhook to a URL that is not under their control, somewhat mitigating the risk of a webhook being used to attack a third party.
 
 ### 5. Since this is your first own web API, there are probably things you would solve in another way, looking back at this assignment. Write your thoughts about this.
 
