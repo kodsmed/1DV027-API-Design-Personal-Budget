@@ -32,7 +32,7 @@ export class WebhookService {
    */
   async registerWebhook(webhook: IAddedExpenseWebhook, uuid: string): Promise<ExpenseAddedWebhook> {
     if (!webhook.ownerUUID) {
-      throw new ExtendedError('Invalid webhook.', 400, new Error('Invalid webhook.'), 'WebhookService.registerWebhook')
+      webhook.ownerUUID = uuid
     }
     if (!webhook.url) {
       throw new ExtendedError('Invalid webhook.', 400, new Error('Invalid webhook.'), 'WebhookService.registerWebhook')
@@ -42,10 +42,16 @@ export class WebhookService {
     }
 
     // does the webhook exist?
-    const existingWebhook = await this.repository.getOneByQuery({ ownerUUID: webhook.ownerUUID })
+    let existingWebhook = null
+    try {
+      existingWebhook = await this.repository.getOneByQuery({ ownerUUID: webhook.ownerUUID })
+    } catch (error) {
+      // do nothin
+    }
     if (existingWebhook) {
       throw new ExtendedError('Webhook already exists.', 409, new Error('Webhook already exists.'), 'WebhookService.registerWebhook')
     }
+
 
     // is the owner the same as the user?
     if (webhook.ownerUUID !== uuid) {
@@ -61,23 +67,31 @@ export class WebhookService {
    * Removes a webhook.
    */
   async removeWebhook(uuid: string): Promise<void> {
-    if (!uuid) {
-      throw new Error('Webhook does not exist.')
-    }
-    // does the webhook exist?
     try {
-      const existingWebhook = await this.repository.getOneByQuery({ ownerUUID: uuid })
-      if (!existingWebhook) {
+      if (!uuid) {
         throw new Error('Webhook does not exist.')
       }
-      await this.repository.deleteByDocument(existingWebhook)
+      // does the webhook exist?
+      let existingWebhook = null
+      try {
+        existingWebhook = await this.repository.getOneByQuery({ ownerUUID: uuid })
+      } catch (error) {
+        throw new ExtendedError('Webhook does not exist.', 404, new Error('Webhook does not exist.'), 'WebhookService.removeWebhook')
+      }
+      if (existingWebhook) {
+        await this.repository.deleteByDocument(existingWebhook)
+      }
     } catch (error) {
-      throw new Error('Failed to remove webhook.')
+      if (error instanceof ExtendedError) {
+        throw error
+      } else {
+        throw new Error('Failed to remove webhook.')
+      }
     }
   }
 
   private generateWebhookObject(webhookDoc: IAddedExpenseWebhook): ExpenseAddedWebhook {
-    return new ExpenseAddedWebhook(webhookDoc.ownerUUID, webhookDoc.url,  webhookDoc.secret, webhookDoc.budgetIdToMonitor, webhookDoc.categoryToMonitor)
+    return new ExpenseAddedWebhook(webhookDoc.ownerUUID, webhookDoc.url, webhookDoc.secret, webhookDoc.budgetIdToMonitor, webhookDoc.categoryToMonitor)
   }
 
   /**
