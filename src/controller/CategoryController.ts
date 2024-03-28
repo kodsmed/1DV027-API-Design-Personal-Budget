@@ -32,6 +32,8 @@ export class CategoryController {
 
   /**
    * Adds a category to the budget.
+   *
+   * @see /swagger-docs/categories-post.yaml
    */
   async addCategory(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
     try {
@@ -66,7 +68,7 @@ export class CategoryController {
       const baseLink = getBaseLink(req)
       hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('back to budget budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('back to budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
       hateoas.addLink('unregister', `${baseLink}/users`, 'DELETE')
       const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas,{})
@@ -76,6 +78,8 @@ export class CategoryController {
 
   /**
    * Get all categories for a budget.
+   *
+   * @see /swagger-docs/categories-get.yaml
    */
   async getCategories(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
     try {
@@ -88,7 +92,7 @@ export class CategoryController {
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
 
       // handles pagination
       let paginatedCategories = categories
@@ -122,7 +126,7 @@ export class CategoryController {
         hateoas.addLink(`delete category ${i}: ${paginatedCategories[i].categoryName}`, `${baseLink}/budgets/${req.params.budgetid}/categories/${i}`, 'DELETE')
       }
 
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('back to the budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
       hateoas.addLink('unregister', `${baseLink}/users`, 'DELETE')
       const customResponse = new CustomResponse(200, 'OK', 'Categories retrieved', paginatedCategories, hateoas, resultingPagination)
@@ -137,8 +141,8 @@ export class CategoryController {
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
+      hateoas.addLink('back to the budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
       hateoas.addLink('unregister', `${baseLink}/users`, 'DELETE')
       const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas, {})
@@ -160,8 +164,8 @@ export class CategoryController {
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
+      hateoas.addLink('back to the budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
       const customResponse = new CustomResponse(200, 'OK', 'Category retrieved', category, hateoas, {})
       res.status(200).json(customResponse)
@@ -175,8 +179,8 @@ export class CategoryController {
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
+      hateoas.addLink('back to the budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
       const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas, {})
       res.status(code).json(customResponse)
@@ -185,6 +189,8 @@ export class CategoryController {
 
   /**
    * Update a category.
+   *
+   * @see /swagger-docs/categoryId-put.yaml
    */
   async updateCategory(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
     try {
@@ -203,8 +209,8 @@ export class CategoryController {
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
+      hateoas.addLink('back to the budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
       const customResponse = new CustomResponse(200, 'OK', 'Category updated', changedBudget, hateoas, {})
       res.status(200).json(customResponse)
@@ -218,8 +224,8 @@ export class CategoryController {
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
+      hateoas.addLink('back to the budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
       const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas, {})
       res.status(code).json(customResponse)
@@ -245,8 +251,8 @@ export class CategoryController {
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
+      hateoas.addLink('back to the budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
       const customResponse = new CustomResponse(200, 'OK', 'Category deleted', changedBudget, hateoas, {})
       res.status(200).json(customResponse)
@@ -261,8 +267,8 @@ export class CategoryController {
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
       hateoas.addLink('add category', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'POST')
-      hateoas.addLink('get categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
-      hateoas.addLink('view budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
+      hateoas.addLink('get all categories', `${baseLink}/budgets/${req.params.budgetid}/categories`, 'GET')
+      hateoas.addLink('back to the budget', `${baseLink}/budgets/${req.params.budgetid}`, 'GET')
       hateoas.addLink('logout', `${baseLink}/users/logout`, 'POST')
       const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas, {})
       res.status(code).json(customResponse)
