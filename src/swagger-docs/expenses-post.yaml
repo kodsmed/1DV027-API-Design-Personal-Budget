@@ -1,5 +1,5 @@
 paths:
-  /budgets/{budgetId}/categories/{categoryId}/expenses:
+  /api/v1/budgets/{budgetId}/categories/{categoryId}/expenses:
     post:
       summary: Add an expense to a category
       tags:

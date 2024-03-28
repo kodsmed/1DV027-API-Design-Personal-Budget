@@ -1,5 +1,5 @@
 paths:
-  /budgets/{budgetId}/categories:
+  /api/v1/budgets/{budgetId}/categories:
     post:
       summary: Add a category to the budget
       tags:

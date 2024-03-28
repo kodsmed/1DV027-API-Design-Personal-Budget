@@ -1,5 +1,5 @@
 paths:
-  /budgets/{budgetId}/categories:
+  /api/v1/budgets/{budgetId}/categories:
     get:
       summary: Get all categories for a budget. The categories are paginated if there is more than 10 categories or page and perPage query parameters are provided.
       tags:

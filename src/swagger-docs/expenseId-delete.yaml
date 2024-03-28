@@ -1,5 +1,5 @@
 paths:
-  /budgets/{budgetId}/categories/{categoryId}/expenses/{expenseId}:
+  /api/v1/budgets/{budgetId}/categories/{categoryId}/expenses/{expenseId}:
     delete:
       tags:
         - expenses

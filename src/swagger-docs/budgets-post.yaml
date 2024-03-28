@@ -1,5 +1,5 @@
 paths:
-  /budgets:
+  /api/v1/budgets:
     post:
       summary: Create a budget
       tags:

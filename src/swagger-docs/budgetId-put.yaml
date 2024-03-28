@@ -1,5 +1,5 @@
 paths:
-  /budgets/{budgetId}:
+  /api/v1/budgets/{budgetId}:
     put:
       summary: Update a budget
       tags:

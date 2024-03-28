@@ -1,17 +1,5 @@
-openapi: 3.0.0
-info:
-  title: Personal Budget API
-  version: '1.0.0'
-  description: API that allows users to create and manage personal budgets.
-  contact:
-    email: 'contact@example.com'
-  license:
-    name: MIT
-    url: 'https://opensource.org/licenses/MIT'
-servers:
-  - url: 'http://localhost:8080/api/v1'
 paths:
-  /budgets:
+  /api/v1/budgets:
     get:
       summary: Get all budgets. The budgets are paginated if there are more than 10 budgets or page and perPage query parameters are provided.
       tags:

@@ -1,5 +1,5 @@
 paths:
-  /budgets/{budgetId}:
+  /api/v1/budgets/{budgetId}:
     get:
       summary: Retrieve a specific budget
       tags:

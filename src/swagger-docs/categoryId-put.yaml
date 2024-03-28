@@ -1,5 +1,5 @@
 paths:
-  /budgets/{budgetId}/categories/{categoryId}:
+  /api/v1/budgets/{budgetId}/categories/{categoryId}:
     put:
       summary: Update a category in the budget
       tags:
