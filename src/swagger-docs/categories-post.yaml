@@ -189,7 +189,7 @@ paths:
                 properties:
                   statusCode:
                     type: integer
-                    example: 400
+                    example: 409
                   status:
                     type: string
                     example: "Error"
