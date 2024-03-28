@@ -244,9 +244,8 @@ export class ExpenseController {
       if (error instanceof ExtendedError) {
         code = error.status || 500
         message = error.message || 'Internal server error'
-      } else {
-        res.status(code).json(new CustomResponse(code, 'Error', message, {}, new Hateoas([]), {}))
       }
+      res.status(code).json(new CustomResponse(code, 'Error', message, {}, new Hateoas([]), {}))
     }
   }
 
@@ -291,9 +290,8 @@ export class ExpenseController {
       if (error instanceof ExtendedError) {
         code = error.status || 500
         message = error.message || 'Internal server error'
-      } else {
-        res.status(code).json(new CustomResponse(code, 'Error', message, {}, new Hateoas([]), {}))
       }
+      res.status(code).json(new CustomResponse(code, 'Error', message, {}, new Hateoas([]), {}))
     }
   }
 
