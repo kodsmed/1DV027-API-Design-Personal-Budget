@@ -55,21 +55,31 @@ export class ExpenseController {
       const baseLink = getBaseLink(req)
       const newExpenseId = updatedBudget.categories[categoryId].expenses.length - 1
       const hateoas = new Hateoas([
-        new HateoasLink('update', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses/${newExpenseId}`, 'PUT'),
-        new HateoasLink('delete', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses/${newExpenseId}`, 'DELETE'),
+        new HateoasLink('get expense', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses/${newExpenseId}`, 'GET'),
+        new HateoasLink('update expense', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses/${newExpenseId}`, 'PUT'),
+        new HateoasLink('delete expense', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses/${newExpenseId}`, 'DELETE'),
         new HateoasLink('all expenses', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses`, 'GET'),
+        new HateoasLink('back to category', `${baseLink}/budget/${budgetId}/category/${categoryId}`, 'GET'),
+        new HateoasLink('logout', `${baseLink}/users/logout`, 'GET'),
+        new HateoasLink('unregister', `${baseLink}/users`, 'DELETE'),
       ])
       const responseObject = new CustomResponse(statusCode, status, message, updatedBudget, hateoas, {})
       res.status(201).json(responseObject)
       this.webhookController.triggerWebhook(req, expense, budgetId, categoryId)
     } catch (error) {
+      const errorHateoas = new Hateoas([
+        new HateoasLink('all expenses', `${getBaseLink(req)}/budget/${req.params.budgetid}/category/${req.params.categoryid}/expenses`, 'GET'),
+        new HateoasLink('back to category', `${getBaseLink(req)}/budget/${req.params.budgetid}/category/${req.params.categoryid}`, 'GET'),
+        new HateoasLink('logout', `${getBaseLink(req)}/users/logout`, 'GET'),
+        new HateoasLink('unregister', `${getBaseLink(req)}/users`, 'DELETE'),
+      ])
       let code = 500
       let message = 'Internal server error'
       if (error instanceof ExtendedError) {
         code = error.status || 500
         message = error.message || 'Internal server error'
       }
-      res.status(code).json(new CustomResponse(code, 'Error', message, {}, new Hateoas([]), {}))
+      res.status(code).json(new CustomResponse(code, 'Error', message, {}, errorHateoas, {}))
     }
   }
 
@@ -112,13 +122,23 @@ export class ExpenseController {
       await this.saveBudget(req, res, updatedBudget)
       const baseLink = getBaseLink(req)
       const hateoas = new Hateoas([
-        new HateoasLink('update', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses/${expenseId}`, 'PUT'),
-        new HateoasLink('delete', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses/${expenseId}`, 'DELETE'),
-        new HateoasLink('all expenses', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses`, 'GET'),
+        new HateoasLink('get expense', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses/${expenseId}`, 'GET'),
+        new HateoasLink('update expense', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses/${expenseId}`, 'PUT'),
+        new HateoasLink('delete expense', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses/${expenseId}`, 'DELETE'),
+        new HateoasLink('all expenses', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses`, 'GET'),
+        new HateoasLink('back to category', `${baseLink}/budget/${budgetId}/category/${categoryId}`, 'GET'),
+        new HateoasLink('logout', `${baseLink}/users/logout`, 'GET'),
+        new HateoasLink('unregister', `${baseLink}/users`, 'DELETE'),
       ])
       const responseObject = new CustomResponse(statusCode, status, message, updatedBudget, hateoas, {})
       res.status(200).json(responseObject)
     } catch (error) {
+      const errorHateoas = new Hateoas([
+        new HateoasLink('all expenses', `${getBaseLink(req)}/budget/${req.params.budgetid}/category/${req.params.categoryid}/expenses`, 'GET'),
+        new HateoasLink('back to category', `${getBaseLink(req)}/budget/${req.params.budgetid}/category/${req.params.categoryid}`, 'GET'),
+        new HateoasLink('logout', `${getBaseLink(req)}/users/logout`, 'GET'),
+        new HateoasLink('unregister', `${getBaseLink(req)}/users`, 'DELETE'),
+      ])
       let code = 500
       let message = 'Internal server error'
       if (error instanceof ExtendedError) {
@@ -161,18 +181,27 @@ export class ExpenseController {
       this.saveBudget(req, res, updatedBudget)
       const baseLink = getBaseLink(req)
       const hateoas = new Hateoas([
-        new HateoasLink('all expenses', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses`, 'GET'),
+        new HateoasLink('all expenses', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses`, 'GET'),
+        new HateoasLink('back to category', `${baseLink}/budget/${budgetId}/category/${categoryId}`, 'GET'),
+        new HateoasLink('logout', `${baseLink}/users/logout`, 'GET'),
+        new HateoasLink('unregister', `${baseLink}/users`, 'DELETE'),
       ])
       const responseObject = new CustomResponse(statusCode, status, message, updatedBudget, hateoas, {})
       res.status(200).json(responseObject)
     } catch (error) {
+      const errorHateoas = new Hateoas([
+        new HateoasLink('all expenses', `${getBaseLink(req)}/budget/${req.params.budgetid}/category/${req.params.categoryid}/expenses`, 'GET'),
+        new HateoasLink('back to category', `${getBaseLink(req)}/budget/${req.params.budgetid}/category/${req.params.categoryid}`, 'GET'),
+        new HateoasLink('logout', `${getBaseLink(req)}/users/logout`, 'GET'),
+        new HateoasLink('unregister', `${getBaseLink(req)}/users`, 'DELETE'),
+      ])
       let code = 500
       let message = 'Internal server error'
       if (error instanceof ExtendedError) {
         code = error.status || 500
         message = error.message || 'Internal server error'
       }
-      res.status(code).json(new CustomResponse(code, 'Error', message, {}, new Hateoas([]), {}))
+      res.status(code).json(new CustomResponse(code, 'Error', message, {}, errorHateoas, {}))
     }
   }
 
@@ -180,6 +209,8 @@ export class ExpenseController {
    * Get all expenses for a category.
    * @param req - The request object.
    * @param res - The response object.
+   *
+   * @see /swagger-docs/expenses-get.yaml
    */
   async getAllExpenses(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
     try {
@@ -209,17 +240,21 @@ export class ExpenseController {
       }
       const baseLink = getBaseLink(req)
       const hateoas = new Hateoas([
-        new HateoasLink('add', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses`, 'POST'),
+        new HateoasLink('all expenses', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses`, 'GET'),
+        new HateoasLink('back to category', `${baseLink}/budget/${budgetId}/category/${categoryId}`, 'GET'),
       ])
       let message = 'Expenses retrieved successfully'
-      if (expenses.length > 100 || pagination) {
+
+      if (expenses.length > 10 || pagination) {
         const page = pagination ? pagination.page : 1
-        const perPage = pagination ? pagination.perPage : 100
+        const perPage = pagination ? pagination.perPage : 10
         const start = (page - 1) * perPage
-        const end = start + perPage
+        const end = Math.min((start + perPage), expenses.length)
         const total = budget.categories[categoryId].expenses.length
         const totalPages = Math.ceil(total / perPage)
-        expenses = expenses.slice(start, end)
+        if (expenses.length > 10) {
+          expenses = expenses.slice(start, end)
+        }
         resultingPagination = { page: page, perPage: perPage, total: total, totalPages: totalPages }
         message = 'Expenses retrieved successfully. Pagination applied.'
 
@@ -231,21 +266,38 @@ export class ExpenseController {
           hateoas.addLink('next page', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses?page=${page + 1}&perPage=${perPage}`, 'GET')
           hateoas.addLink('last page', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses?page=${totalPages}&perPage=${perPage}`, 'GET')
         }
-
       }
+
+      for (let i = 0; i < expenses.length; i++) {
+        let pageAdjustedNumber = 0
+        if (pagination) {
+          pageAdjustedNumber = (pagination.page - 1) * pagination.perPage + i
+        } else {
+          pageAdjustedNumber = i
+        }
+        hateoas.addLink(`expense ${i}`, `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses/${pageAdjustedNumber}`, 'GET')
+      }
+
+      hateoas.addLink('logout', `${baseLink}/users/logout`, 'GET')
+      hateoas.addLink('unregister', `${baseLink}/users`, 'DELETE')
       const statusCode = 200
       const status = 'OK'
 
       const responseObject = new CustomResponse(statusCode, status, message, expenses, hateoas, resultingPagination)
       res.status(200).json(responseObject)
     } catch (error) {
+      const errorHateoas = new Hateoas([
+        new HateoasLink('back to budget', `${getBaseLink(req)}/budget/${req.params.budgetid}`, 'GET'),
+        new HateoasLink('logout', `${getBaseLink(req)}/users/logout`, 'GET'),
+        new HateoasLink('unregister', `${getBaseLink(req)}/users`, 'DELETE'),
+      ])
       let code = 500
       let message = 'Internal server error'
       if (error instanceof ExtendedError) {
         code = error.status || 500
         message = error.message || 'Internal server error'
       }
-      res.status(code).json(new CustomResponse(code, 'Error', message, {}, new Hateoas([]), {}))
+      res.status(code).json(new CustomResponse(code, 'Error', message, {}, errorHateoas, {}))
     }
   }
 
@@ -278,20 +330,29 @@ export class ExpenseController {
       const status = 'OK'
       const baseLink = getBaseLink(req)
       const hateoas = new Hateoas([
+        new HateoasLink('all expenses', `${baseLink}/budget/${budgetId}/category/${categoryId}/expenses`, 'GET'),
         new HateoasLink('update', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses/${expenseId}`, 'PUT'),
         new HateoasLink('delete', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses/${expenseId}`, 'DELETE'),
-        new HateoasLink('all expenses', `${baseLink}/budgets/${budgetId}/categories/${categoryId}/expenses`, 'GET'),
+        new HateoasLink('back to category', `${baseLink}/budget/${budgetId}/category/${categoryId}`, 'GET'),
+        new HateoasLink('logout', `${baseLink}/users/logout`, 'GET'),
+        new HateoasLink('unregister', `${baseLink}/users`, 'DELETE'),
       ])
       const responseObject = new CustomResponse(statusCode, status, message, expense, hateoas, {})
       res.status(200).json(responseObject)
     } catch (error) {
+      const errorHateoas = new Hateoas([
+        new HateoasLink('all expenses', `${getBaseLink(req)}/budget/${req.params.budgetid}/category/${req.params.categoryid}/expenses`, 'GET'),
+        new HateoasLink('back to category', `${getBaseLink(req)}/budget/${req.params.budgetid}/category/${req.params.categoryid}`, 'GET'),
+        new HateoasLink('logout', `${getBaseLink(req)}/users/logout`, 'GET'),
+        new HateoasLink('unregister', `${getBaseLink(req)}/users`, 'DELETE'),
+      ])
       let code = 500
       let message = 'Internal server error'
       if (error instanceof ExtendedError) {
         code = error.status || 500
         message = error.message || 'Internal server error'
       }
-      res.status(code).json(new CustomResponse(code, 'Error', message, {}, new Hateoas([]), {}))
+      res.status(code).json(new CustomResponse(code, 'Error', message, {}, errorHateoas, {}))
     }
   }
 
