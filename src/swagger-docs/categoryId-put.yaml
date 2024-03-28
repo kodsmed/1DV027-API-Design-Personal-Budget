@@ -1,0 +1,157 @@
+paths:
+  /budgets/{budgetId}/categories/{categoryId}:
+    put:
+      summary: Update a category in the budget
+      tags:
+        - categories
+      description: Updates an existing category in the specified budget.
+      operationId: updateCategory
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: budgetId
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the budget
+        - in: path
+          name: categoryId
+          required: true
+          schema:
+            type: integer
+          description: Numeric identifier of the category within the budget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryName:
+                  type: string
+                  example: "CommutingCard"
+                categoryLimit:
+                  type: number
+                  example: 1200
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: "Category updated"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to the budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+        '400':
+          description: Validation failed for the category data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "Category name is required."
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to the budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+        '500':
+          description: Internal server error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 500
+                  status:
+                    type: string
+                    example: "Error"
+                  message:
+                    type: string
+                    example: "Internal server error"
+                  data:
+                    type: object
+                  Links:
+                    type: array
+                    items:
+                      type: object
+                    example:
+                      - rel: "get all categories"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "GET"
+                      - rel: "add category"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}/categories"
+                        method: "POST"
+                      - rel: "back to the budget"
+                        href: "http://localhost:8080/api/v1/budgets/{budgetId}"
+                        method: "GET"
+                      - rel: "logout"
+                        href: "http://localhost:8080/api/v1/users/logout"
+                        method: "POST"
+                      - rel: "unregister"
+                        href: "http://localhost:8080/api/v1/users"
+                        method: "DELETE"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
