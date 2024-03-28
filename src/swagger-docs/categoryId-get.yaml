@@ -2,7 +2,7 @@ paths:
   /budgets/{budgetId}/categories/{categoryId}:
     get:
       tags:
-        - category
+        - categories
       summary: Get a category by ID
       operationId: getCategoryById
       parameters:
