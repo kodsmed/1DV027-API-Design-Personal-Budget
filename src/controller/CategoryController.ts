@@ -152,6 +152,8 @@ export class CategoryController {
 
   /**
    * Get a category by id.
+   *
+   * @see /swagger-docs/categoryId-get.yaml
    */
   async getCategoryById(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
     try {
@@ -160,6 +162,9 @@ export class CategoryController {
       const userId = req.UUID as string || ''
 
       const found = await this.budgetService.getBudgetById(budgetId, userId)
+      if (categoryId > found.categories.length - 1 || categoryId < 0) {
+        throw new ExtendedError('Category not found', 404)
+      }
       const category = found.categories[categoryId] || {}
       const hateoas = new Hateoas([])
       const baseLink = getBaseLink(req)
