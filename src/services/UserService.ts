@@ -84,47 +84,64 @@ export class UserService {
    * Update a user to the new details.
    */
   async updateUser(user: UserData): Promise<UserData> {
-    let oldPassword: string = ""
-    let oldEmail: string = ""
-    let oldUsername: string = ""
-    let userDocument = await this.repository.getById(user.id) as IUser
+    let userDocument: IUser | null = null
     try {
-    oldPassword = userDocument.password
-    oldEmail = userDocument.email
-    oldUsername = userDocument.username
-
-    // NOTE: This is a placeholder hack to prevent the validator from throwing a unique constraint error if the user does not change their email or username.
-    // Since the validator works before the save, we need to temporarily change the email and username to something that will not conflict with the unique constraint.
-    // Other options include removing the post, and re-adding it, but that clears timestamps and other data.
-    userDocument.username = 'PlaceHolder1234567890'
-    userDocument.email = 'placeholder1234567890@placeholderignore.com'
-    await this.repository.save(userDocument)
-    } catch (error: any) {
-      // Revert the changes to the user document.
-      userDocument.username = oldUsername
-      userDocument.email = oldEmail
-      await this.repository.save(userDocument)
-      throw error
+      userDocument = await this.repository.getOneByQuery({uuid: user.uuid}) as IUser
+    }
+    catch (error: any) {
+      throw new ExtendedError('User does not exist.', 404, new Error('User does not exist.'), 'UserService.updateUser')
     }
 
+    if (!userDocument) {
+      throw new ExtendedError('User does not exist.', 404, new Error('User does not exist.'), 'UserService.updateUser')
+    }
+    if (userDocument.userID !== user.uuid) {
+      throw new ExtendedError('Invalid user.', 401, new Error('Invalid user.'), 'UserService.updateUser')
+    }
+    if (!user.username && !user.email && !user.password) {
+      throw new ExtendedError('No changes to user.', 400, new Error('No changes to user.'), 'UserService.updateUser')
+    }
+    if (user.username) {
+      // set up the regex pattern for the username
+      const pattern = /^[A-Za-z][A-Za-z0-9_-]{7,31}$/;
+      if (!pattern.test(user.username)) {
+        throw new ExtendedError('Invalid username.', 400, new Error('Invalid username.'), 'UserService.updateUser');
+      }
+    }
+    if (user.email) {
+      // set up the regex pattern for the email
+      const pattern = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$')
+      if (!pattern.test(user.email)) {
+        throw new ExtendedError('Invalid email.', 400, new Error('Invalid email.'), 'UserService.updateUser')
+      }
+    }
+
+    try {
+      const otherUser = await this.repository.getOneByQuery({email: user.email}) as IUser
+      if (otherUser && otherUser.userID !== user.uuid) {
+        throw new ExtendedError('Email already in use.', 409, new Error('Email already in use.'), 'UserService.updateUser')
+      }
+    }
+    catch (error: any) {
+      if (error instanceof ExtendedError && error.status !== 404) {
+        throw error
+      }
+    }
+
+    if(user.email.length > 256) {
+      throw new ExtendedError('Email too long.', 400, new Error('Email too long.'), 'UserService.updateUser')
+    }
+    if(user.password && user.password.length > 256) {
+      throw new ExtendedError('Password too long.', 400, new Error('Password too long.'), 'UserService.updateUser')
+    }
+    userDocument.username = user.username || userDocument.username
+    userDocument.email = user.email || userDocument.email
+    userDocument.password = user.password ? await this.hashPassword(user.password) : userDocument.password
+    const validateBeforeSave = false // Needed to avoid issues with the unique constraint on the email field.
     try{
-      userDocument.username = user.username || oldUsername
-      userDocument.email = user.email || oldEmail
-      userDocument.password = user.password ? await this.hashPassword(user.password) : oldPassword
-
-      // NOTE: ID and userID should not be updated by the user so they are not included in the update, but if they should be updated, uncomment the following lines.
-      // userDocument.userID = user.userID || userDocument.userID
-      // userDocument.id = user.id || userDocument.id
-
-      // save the updated user
-      const updatedUser = await this.repository.save(userDocument) as IUser
+      const updatedUser = await this.repository.save(userDocument, validateBeforeSave) as IUser
       return this.generateUserDataObject(updatedUser)
     } catch (error: any) {
-      // Revert the changes to the user document.
-      userDocument.username = oldUsername
-      userDocument.email = oldEmail
-      userDocument.password = oldPassword
-      await this.repository.save(userDocument)
       throw error
     }
   }

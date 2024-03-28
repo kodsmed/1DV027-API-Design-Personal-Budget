@@ -53,7 +53,8 @@ const schema = new mongoose.Schema({
   userID: {
     type: String,
     required: [true, 'User ID is required.'],
-    length: [36, 'User ID must be 36 characters long.']
+    length: [36, 'User ID must be 36 characters long.'],
+    unique: true
   }
 }, {
   timestamps: true,

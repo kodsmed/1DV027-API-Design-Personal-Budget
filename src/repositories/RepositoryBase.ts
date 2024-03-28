@@ -315,9 +315,10 @@ export class RepositoryBase {
    * @param {mongoose.Document} doc - The document to be saved.
    * @returns {Promise<mongoose.Document>} - The saved document.
    */
-  async save(doc: mongoose.Document): Promise<mongoose.Document> {
-    try {
-      return await doc.save()
+  async save(doc: mongoose.Document, validate = true): Promise<mongoose.Document> {
+
+      return await doc.save({ validateBeforeSave: validate})
+      try {
     } catch (error) {
       let errorToPass = new Error("Failed to save document.")
       let code = 500
