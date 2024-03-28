@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "node compiledSrc/server.js",
+    "populateDB": "node compiledSrc/populateDB.js",
     "test": "npx run test",
     "dev": "npx tsc",
     "lint": "npx eslint . --ext ./src.ts || exit 0",
