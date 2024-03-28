@@ -28,6 +28,7 @@ export class ExpenseController {
    * Create a new expense.
    * @param req - The request object.
    * @param res - The response object.
+   * @see /swagger-docs/expenses-post.yaml
    */
   async addExpense(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
     try {
@@ -87,6 +88,7 @@ export class ExpenseController {
    * Update an existing expense.
    * @param req - The request object.
    * @param res - The response object.
+   * @see /swagger-docs/expenses-put.yaml
    */
   async updateExpense(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
     try {
@@ -130,7 +132,7 @@ export class ExpenseController {
         new HateoasLink('logout', `${baseLink}/users/logout`, 'GET'),
         new HateoasLink('unregister', `${baseLink}/users`, 'DELETE'),
       ])
-      const responseObject = new CustomResponse(statusCode, status, message, updatedBudget, hateoas, {})
+      const responseObject = new CustomResponse(statusCode, status, message, expense, hateoas, {})
       res.status(200).json(responseObject)
     } catch (error) {
       const errorHateoas = new Hateoas([
@@ -145,7 +147,7 @@ export class ExpenseController {
         code = error.status || 500
         message = error.message || 'Internal server error'
       }
-      res.status(code).json(new CustomResponse(code, 'Error', message, {}, new Hateoas([]), {}))
+      res.status(code).json(new CustomResponse(code, 'Error', message, {}, errorHateoas, {}))
     }
   }
 
@@ -153,6 +155,7 @@ export class ExpenseController {
    * Delete an existing expense.
    * @param req - The request object.
    * @param res - The response object.
+   * @see /swagger-docs/expenses-delete.yaml
    */
   async deleteExpense(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
     try {
@@ -186,7 +189,7 @@ export class ExpenseController {
         new HateoasLink('logout', `${baseLink}/users/logout`, 'GET'),
         new HateoasLink('unregister', `${baseLink}/users`, 'DELETE'),
       ])
-      const responseObject = new CustomResponse(statusCode, status, message, updatedBudget, hateoas, {})
+      const responseObject = new CustomResponse(statusCode, status, message, {}, hateoas, {})
       res.status(200).json(responseObject)
     } catch (error) {
       const errorHateoas = new Hateoas([
@@ -303,6 +306,7 @@ export class ExpenseController {
 
   /**
    * Get expense by id.
+   * @see /swagger-docs/expenseId-get.yaml
    */
   async getExpenseById(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
     try {
