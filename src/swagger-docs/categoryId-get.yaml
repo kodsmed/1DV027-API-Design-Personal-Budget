@@ -19,7 +19,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Category retrieved successfully
           content:
             application/json:
@@ -37,33 +37,192 @@ paths:
                     example: Category retrieved
                   data:
                     type: object
-                    properties:
-                      categoryName:
-                        type: string
-                        example: CommutingCard
-                      categoryLimit:
-                        type: integer
-                        example: 1200
-                      expenses:
-                        type: array
-                        items: {}
-                  links:
+                    example:
+                      {
+                        "categoryName": "Rent",
+                        "categoryLimit": 6500,
+                        "expenses":
+                          [
+                            {
+                              "ownerUUID": "4d5139fe-b06b-4b85-937f-b865abe87298",
+                              "date": "2024-03-28T11:56:35.501Z",
+                              "amount": 4100,
+                              "note": "rent",
+                            },
+                          ],
+                      }
+                  Links:
                     type: array
-                    items:
-                      type: object
-                      properties:
-                        rel:
-                          type: string
-                        href:
-                          type: string
-                        method:
-                          type: string
+                    example:
+                      [
+                        {
+                          "rel": "add category",
+                          "href": "http://localhost:8080/api/v1/budgets/66055ad9d6f47113ae534189/categories",
+                          "method": "POST",
+                        },
+                        {
+                          "rel": "get all categories",
+                          "href": "http://localhost:8080/api/v1/budgets/66055ad9d6f47113ae534189/categories",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "back to the budget",
+                          "href": "http://localhost:8080/api/v1/budgets/66055ad9d6f47113ae534189",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "logout",
+                          "href": "http://localhost:8080/api/v1/users/logout",
+                          "method": "POST",
+                        },
+                      ]
                   pagination:
                     type: object
-        '401':
+        "401":
+          description: Unauthorized - no, invalid or expired, access token provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/401ErrorResponse"
+        "403":
+          description: Forbidden - user does not have permission to access the category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 403
+                  status:
+                    type: string
+                    example: Forbidden
+                  message:
+                    type: string
+                    example: User does not have access to the budget
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    example:
+                      [
+                        {
+                          "rel": "get all categories",
+                          "href": "http://localhost:8080/api/v1/budgets/{budgetId}/categories",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "add category",
+                          "href": "http://localhost:8080/api/v1/budgets/{budgetId}/categories",
+                          "method": "POST",
+                        },
+                        {
+                          "rel": "back to the budget",
+                          "href": "http://localhost:8080/api/v1/budgets/{budgetId}",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "logout",
+                          "href": "http://localhost:8080/api/v1/users/logout",
+                          "method": "POST",
+                        },
+                      ]
+        "404":
           description: Category not found
-        '500':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: Error
+                  message:
+                    type: string
+                    example: Category not found
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    example:
+                      [
+                        {
+                          "rel": "get all categories",
+                          "href": "http://localhost:8080/api/v1/budgets/{budgetId}/categories",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "add category",
+                          "href": "http://localhost:8080/api/v1/budgets/{budgetId}/categories",
+                          "method": "POST",
+                        },
+                        {
+                          "rel": "back to the budget",
+                          "href": "http://localhost:8080/api/v1/budgets/{budgetId}",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "logout",
+                          "href": "http://localhost:8080/api/v1/users/logout",
+                          "method": "POST",
+                        },
+                      ]
+                  pagination:
+                    type: object
+                    example: {}
+
+        "500":
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 500
+                  status:
+                    type: string
+                    example: Error
+                  message:
+                    type: string
+                    example: Internal server error
+                  data:
+                    type: object
+                    example: {}
+                  Links:
+                    type: array
+                    example:
+                      [
+                        {
+                          "rel": "get all categories",
+                          "href": "http://localhost:8080/api/v1/budgets/{budgetId}/categories",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "add category",
+                          "href": "http://localhost:8080/api/v1/budgets/{budgetId}/categories",
+                          "method": "POST",
+                        },
+                        {
+                          "rel": "back to the budget",
+                          "href": "http://localhost:8080/api/v1/budgets/{budgetId}",
+                          "method": "GET",
+                        },
+                        {
+                          "rel": "logout",
+                          "href": "http://localhost:8080/api/v1/users/logout",
+                          "method": "POST",
+                        },
+                      ]
+                  pagination:
+                    type: object
+                    example: {}
       security:
         - bearerAuth: []
 components:
