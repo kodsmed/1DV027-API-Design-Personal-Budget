@@ -113,16 +113,16 @@ export class RepositoryBase {
 
 
     } catch (error) {
-      let errorToPass
+      console.log (error)
+      let errorToPass = new Error("Failed to get document.")
       let code = 500
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         errorToPass = new Error("Document not found.")
+        code = 404
       }
       else if (error instanceof mongoose.Error.CastError) {
         errorToPass = new Error("Invalid ID.")
         code = 404
-      } else {
-        errorToPass = new Error("Failed to get document.")
       }
       const err = new ExtendedError("Failed to get document.", code, errorToPass, "RepositoryBase.getAll")
       throw err
@@ -146,16 +146,15 @@ export class RepositoryBase {
 
       return doc
     } catch (error) {
-      let errorToPass
+      let errorToPass = new Error("Failed to get document.")
       let code = 500
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         errorToPass = new Error("Document not found.")
+        code = 404
       }
       else if (error instanceof mongoose.Error.CastError) {
         errorToPass = new Error("Invalid ID.")
         code = 404
-      } else {
-        errorToPass = new Error("Failed to get document.")
       }
       const err = new ExtendedError("Failed to get document.", code, errorToPass, "RepositoryBase.getById")
       throw err
@@ -203,16 +202,15 @@ export class RepositoryBase {
       }
     }
     } catch (error) {
-      let errorToPass
+      let errorToPass = new Error("Failed to get document.")
       let code = 500
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         errorToPass = new Error("Document not found.")
+        code = 404
       }
       else if (error instanceof mongoose.Error.CastError) {
         errorToPass = new Error("Invalid ID.")
         code = 404
-      } else {
-        errorToPass = new Error("Failed to get document.")
       }
       const err = new ExtendedError("Failed to get document.", code, errorToPass, "RepositoryBase.getByQuery")
       throw err
@@ -235,16 +233,15 @@ export class RepositoryBase {
 
       return doc
     } catch (error) {
-      let errorToPass
+      let errorToPass = new Error("Failed to get document.")
       let code = 500
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         errorToPass = new Error("Document not found.")
+        code = 404
       }
       else if (error instanceof mongoose.Error.CastError) {
         errorToPass = new Error("Invalid ID.")
         code = 404
-      } else {
-        errorToPass = new Error("Failed to get document.")
       }
       const err = new ExtendedError("Failed to get document.", code, errorToPass, "RepositoryBase.getOneByQuery")
       throw err
@@ -261,15 +258,14 @@ export class RepositoryBase {
       console.log("doc:", doc)
 
     } catch (error) {
-      let errorToPass
+      let errorToPass = new Error("Failed to delete document.")
       let code = 500
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         errorToPass = new Error("Document not found.")
+        code = 404
       } else if (error instanceof mongoose.Error.CastError) {
         errorToPass = new Error("Invalid ID.")
         code = 404
-      } else {
-        errorToPass = new Error("Failed to delete document.")
       }
       const err = new ExtendedError("Failed to delete document.", code, errorToPass, "RepositoryBase.deleteById")
       throw err
@@ -292,7 +288,7 @@ export class RepositoryBase {
       await model.deleteOne(deleteData).exec()
       return
     } catch (error) {
-      let errorToPass
+      let errorToPass = new Error("Failed to delete document.")
       let code = 500
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         // The document was not found, it was probably already deleted.
@@ -301,9 +297,6 @@ export class RepositoryBase {
       else if (error instanceof mongoose.Error.CastError) {
         errorToPass = new Error("Invalid ID.")
         code = 404
-      }
-      else {
-        errorToPass = new Error("Failed to delete document.")
       }
       throw new ExtendedError('Failed to delete document.', code, errorToPass, 'RepositoryBase.deleteByDocument')
     }
