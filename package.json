@@ -8,7 +8,7 @@
     "node": ">=20.6.0"
   },
   "scripts": {
-    "start": "node compiledSrc/server.js",
+    "start": "node compiledSrc/src/server.js",
     "populateDB": "node compiledSrc/populateDB.js",
     "test": "npx run test",
     "dev": "npx tsc",
