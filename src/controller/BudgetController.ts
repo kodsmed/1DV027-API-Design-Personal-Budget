@@ -8,6 +8,7 @@ import { CustomResponse } from '../lib/types/CustomResponse.js'
 import { Hateoas, HateoasLink } from '../models/Hateoas.js'
 import { getBaseLink } from '../util/hateoas.js'
 import { ExtendedError } from '../lib/types/ExtendedError.js'
+import { MongooseError } from 'mongoose'
 
 export class BudgetController {
   private budgetService: BudgetService
@@ -276,8 +277,28 @@ export class BudgetController {
       let message = 'Unknown Error'
       if (error instanceof ExtendedError) {
         code = error.status || 500
-        message = error.message || 'Internal Server Error'
+        message = error.cause?.message || 'Internal Server Error'
+        if (code === 404) {
+          message = 'Budget not found.'
+        }
       }
+
+      if (error instanceof MongooseError) {
+        code = 400
+        message = 'Invalid budget data'
+        if (error.name === 'CastError') {
+          message = 'Invalid budget id.'
+          code = 404
+        }
+        if (error.name === 'ValidationError') {
+          message = error.message
+        }
+        if (error.message.includes('Failed to get document.')) {
+          message = 'Budget not found.'
+          code = 404
+        }
+      }
+
 
       const customResponse = new CustomResponse(code, 'Error', message, {}, hateoas, {})
       res.status(code).json(customResponse)

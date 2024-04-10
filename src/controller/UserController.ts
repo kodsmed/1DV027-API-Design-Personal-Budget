@@ -167,8 +167,13 @@ export class UserController {
         }
 
         if (error instanceof mongoose.Error) {
+          if (error.message.includes('document not found')) {
+            message = 'User not found'
+            code = 404
+          } else {
           message = 'Internal server error'
           code = 500
+          }
         }
 
         if (error instanceof mongoose.Error.ValidationError || error instanceof mongoose.Error.CastError) {
