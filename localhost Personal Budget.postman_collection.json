@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "cd417c90-bfeb-446c-b66c-9c4743d2d1d0",
-		"name": "Personal Budget",
+		"_postman_id": "6c9d4fc7-ba23-423c-9644-b058dc7f63a8",
+		"name": "Personal Budget localhost",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "24865837"
 	},
@@ -9,6 +9,71 @@
 		{
 			"name": "/users",
 			"item": [
+				{
+					"name": "setup - start test run here.",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Pre-request Script\r",
+									"const randomUsername = 'user_' + Math.random().toString(36).substring(7);\r",
+									"const randomEmail = randomUsername + '@example.com';\r",
+									"let randomPassword = Math.random().toString(36).substring(7);\r",
+									"randomPassword += randomPassword + randomPassword\r",
+									"\r",
+									"// Now set the variables\r",
+									"pm.globals.set(\"activeUserUsername\", randomUsername);\r",
+									"pm.globals.set(\"activeUserEmail\", randomEmail);\r",
+									"pm.globals.set(\"activeUserPassword\", randomPassword);\r",
+									"\r",
+									"// Log the generated values\r",
+									"console.log(\"Generated username: \", randomUsername);\r",
+									"console.log(\"Generated email: \", randomEmail);\r",
+									"console.log(\"Generated password: \", randomPassword);\r",
+									"\r",
+									"let tomorrow = new Date();\r",
+									"tomorrow.setDate(tomorrow.getDate() + 1); // This sets 'tomorrow' to today's date plus one day.\r",
+									"\r",
+									"// Formatting the date as 'YYYY-MM-DD' if needed.\r",
+									"let dateString = tomorrow.toISOString().split('T')[0];\r",
+									"\r",
+									"pm.globals.set(\"tomorrow\", dateString);\r",
+									"\r",
+									"console.log(\"Collection vars set... sending request to create user.\");\r",
+									"pm.sendRequest;"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Register new User\")"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "Register new User",
 					"event": [
@@ -515,7 +580,7 @@
 									"    \r",
 									"    pm.expect(responseData).to.be.an('object');\r",
 									"    pm.expect(responseData.Links).to.exist.and.to.be.an('array');\r",
-									"    pm.expect(responseData.Links).to.have.lengthOf(2);\r",
+									"    pm.expect(responseData.Links).to.have.lengthOf(4);\r",
 									"});\r",
 									""
 								],
@@ -582,9 +647,9 @@
 									"  pm.expect(pm.response.code).to.equal(400);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response message is 'Validation failed.'\", function () {\r",
+									"pm.test(\"response message is 'Invalid username.'\", function () {\r",
 									"     var responseJSON = pm.response.json();\r",
-									"     pm.expect(responseJSON.message).to.equal('Validation failed.');\r",
+									"     pm.expect(responseJSON.message).to.equal('Invalid username.');\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -607,7 +672,7 @@
 									"    \r",
 									"    pm.expect(responseData).to.be.an('object');\r",
 									"    pm.expect(responseData.Links).to.exist.and.to.be.an('array');\r",
-									"    pm.expect(responseData.Links).to.have.lengthOf(1);\r",
+									"    pm.expect(responseData.Links).to.have.lengthOf(2);\r",
 									"});\r",
 									""
 								],
@@ -709,7 +774,7 @@
 									"    \r",
 									"    pm.expect(responseData).to.be.an('object');\r",
 									"    pm.expect(responseData.Links).to.exist.and.to.be.an('array');\r",
-									"    pm.expect(responseData.Links).to.have.lengthOf(2);\r",
+									"    pm.expect(responseData.Links).to.have.lengthOf(4);\r",
 									"});\r",
 									""
 								],
@@ -799,7 +864,7 @@
 									"    \r",
 									"    pm.expect(responseData).to.be.an('object');\r",
 									"    pm.expect(responseData.Links).to.exist.and.to.be.an('array');\r",
-									"    pm.expect(responseData.Links).to.have.lengthOf(2);\r",
+									"    pm.expect(responseData.Links).to.have.lengthOf(4);\r",
 									"});\r",
 									"\r",
 									"postman.setNextRequest(\"Get my budgets... no budgets\")"
@@ -3950,71 +4015,6 @@
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "setup - start test run here.",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"// Pre-request Script\r",
-							"const randomUsername = 'user_' + Math.random().toString(36).substring(7);\r",
-							"const randomEmail = randomUsername + '@example.com';\r",
-							"let randomPassword = Math.random().toString(36).substring(7);\r",
-							"randomPassword += randomPassword + randomPassword\r",
-							"\r",
-							"// Now set the variables\r",
-							"pm.globals.set(\"activeUserUsername\", randomUsername);\r",
-							"pm.globals.set(\"activeUserEmail\", randomEmail);\r",
-							"pm.globals.set(\"activeUserPassword\", randomPassword);\r",
-							"\r",
-							"// Log the generated values\r",
-							"console.log(\"Generated username: \", randomUsername);\r",
-							"console.log(\"Generated email: \", randomEmail);\r",
-							"console.log(\"Generated password: \", randomPassword);\r",
-							"\r",
-							"let tomorrow = new Date();\r",
-							"tomorrow.setDate(tomorrow.getDate() + 1); // This sets 'tomorrow' to today's date plus one day.\r",
-							"\r",
-							"// Formatting the date as 'YYYY-MM-DD' if needed.\r",
-							"let dateString = tomorrow.toISOString().split('T')[0];\r",
-							"\r",
-							"pm.globals.set(\"tomorrow\", dateString);\r",
-							"\r",
-							"console.log(\"Collection vars set... sending request to create user.\");\r",
-							"pm.sendRequest;"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"postman.setNextRequest(\"Register new User\")"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:8080/",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						""
-					]
-				}
-			},
-			"response": []
 		}
 	],
 	"event": [
